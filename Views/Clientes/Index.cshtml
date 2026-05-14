@@ -1,0 +1,114 @@
+@* ============================================================
+   Views/Clientes/Index.cshtml
+   Lista todos os clientes em uma tabela com ações
+   Model = List<Cliente> vindo do ClientesController.Index()
+============================================================ *@
+
+@model List<Cliente>
+
+@{
+    ViewData["Title"]         = "Clientes";
+    ViewData["SidebarTitulo"] = "Clientes";
+}
+
+@section SidebarMenu {
+    @* asp-action gera o href correto automaticamente *@
+    <a asp-action="Create" class="nav-link">
+        <i class="bi bi-plus-circle me-2"></i>Cadastrar
+    </a>
+    <a asp-action="Index" class="nav-link active">
+        <i class="bi bi-list-ul me-2"></i>Listar
+    </a>
+}
+
+@section HeaderNav {
+    <div class="d-flex gap-4">
+        <a asp-controller="Fornecedores" asp-action="Index" class="text-decoration-none" style="color:#8b6f47">
+            Fornecedores
+        </a>
+        <a asp-controller="Contas" asp-action="Index" class="text-decoration-none" style="color:#8b6f47">
+            Contas
+        </a>
+    </div>
+}
+
+@* ── Cabeçalho com título e campo de busca ── *@
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="fw-normal">Todos os clientes</h2>
+    <input type="text" id="busca" class="form-control w-auto"
+           placeholder="🔍 Procurar..." onkeyup="filtrarTabela()">
+</div>
+
+@* ── Tabela de clientes ── *@
+<div class="card shadow-sm">
+    <div class="card-body p-0">
+        <table class="table table-hover mb-0" id="tabelaClientes">
+            <thead class="table-light">
+                <tr>
+                    <th>Nome</th>
+                    <th>CPF/CNPJ</th>
+                    <th>Telefone</th>
+                    <th>Cidade</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @* 
+                    foreach percorre a lista de clientes
+                    Model é o List<Cliente> passado pelo Controller
+                *@
+                @foreach (var cliente in Model)
+                {
+                    <tr>
+                        <td>@cliente.Pessoa?.Nome</td>
+                        <td>@cliente.Pessoa?.Documento</td>
+                        <td>@cliente.Pessoa?.Telefone</td>
+                        <td>@cliente.Pessoa?.Cidade</td>
+                        <td>
+                            <div class="d-flex gap-2">
+                                @* Botão Alterar: passa o Id do cliente na URL *@
+                                <a asp-action="Edit" asp-route-id="@cliente.PessoaId"
+                                   class="btn btn-sm" style="background:#7fd4c1">
+                                    Alterar
+                                </a>
+
+                                @* Formulário de exclusão — usa POST por segurança *@
+                                <form asp-action="Delete" asp-route-id="@cliente.PessoaId"
+                                      method="post" style="display:inline"
+                                      onsubmit="return confirm('Excluir este cliente?')">
+                                    @Html.AntiForgeryToken()
+                                    <button type="submit" class="btn btn-sm btn-danger">
+                                        Excluir
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                }
+                @if (!Model.Any())
+                {
+                    <tr>
+                        <td colspan="5" class="text-center text-muted py-4">
+                            Nenhum cliente cadastrado
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+@* ── JavaScript para filtro na tabela (client-side) ── *@
+<script>
+function filtrarTabela() {
+    // Pega o texto digitado, converte para minúsculas
+    const filtro = document.getElementById("busca").value.toLowerCase();
+    const linhas = document.querySelectorAll("#tabelaClientes tbody tr");
+
+    linhas.forEach(linha => {
+        // Verifica se alguma célula contém o texto buscado
+        const texto = linha.innerText.toLowerCase();
+        linha.style.display = texto.includes(filtro) ? "" : "none";
+    });
+}
+</script>

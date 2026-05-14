@@ -1,0 +1,80 @@
+@model Lancamento
+
+@{
+    ViewData["Title"]         = "Cadastrar Conta";
+    ViewData["SidebarTitulo"] = "Contas";
+}
+
+@section SidebarMenu {
+    <a asp-action="Create" class="nav-link active"><i class="bi bi-plus-circle me-2"></i>Cadastrar</a>
+    <a asp-action="Index"  class="nav-link"><i class="bi bi-list-ul me-2"></i>Listar</a>
+}
+
+@section HeaderNav {
+    <div class="d-flex gap-4">
+        <a asp-controller="Clientes"    asp-action="Index" class="text-decoration-none" style="color:#8b6f47">Clientes</a>
+        <a asp-controller="Fornecedores" asp-action="Index" class="text-decoration-none" style="color:#8b6f47">Fornecedores</a>
+    </div>
+}
+
+<div class="card shadow-sm" style="max-width:760px">
+    <div class="card-body p-4">
+        <h2 class="fw-normal mb-4">Cadastrar Conta</h2>
+
+        <form asp-action="Create" method="post">
+            @Html.AntiForgeryToken()
+
+            <h5 class="text-muted border-bottom pb-2 mb-3">Valores e prazos</h5>
+            <div class="row g-3 mb-3">
+                <div class="col-md-4">
+                    <label asp-for="Valor" class="form-label">Valor (R$)</label>
+                    <input asp-for="Valor" class="form-control" type="number" step="0.01" placeholder="0,00">
+                </div>
+                <div class="col-md-4">
+                    <label asp-for="ParcelaNr" class="form-label">Parcela</label>
+                    <input asp-for="ParcelaNr" class="form-control" placeholder="Ex: 1/3">
+                </div>
+                <div class="col-md-4">
+                    @*
+                        ViewBag.Situacoes vem do Controller
+                        asp-items gera os <option> automaticamente
+                    *@
+                    <label asp-for="SituacaoCodigo" class="form-label">Status</label>
+                    <select asp-for="SituacaoCodigo" class="form-select"
+                            asp-items="@(new SelectList(ViewBag.Situacoes, "Codigo", "Descricao"))">
+                        <option value="">Selecione...</option>
+                    </select>
+                </div>
+            </div>
+            <div class="row g-3 mb-4">
+                <div class="col-md-6">
+                    <label asp-for="DataVencimento" class="form-label">Data de Vencimento</label>
+                    <input asp-for="DataVencimento" class="form-control" type="date">
+                </div>
+                <div class="col-md-6">
+                    <label asp-for="DataPagamento" class="form-label">Data de Pagamento</label>
+                    <input asp-for="DataPagamento" class="form-control" type="date">
+                </div>
+            </div>
+
+            <h5 class="text-muted border-bottom pb-2 mb-3">Vínculo</h5>
+            <div class="row g-3 mb-4">
+                <div class="col-md-6">
+                    <label asp-for="VendaCodigo" class="form-label">Código da Venda (se A Receber)</label>
+                    <input asp-for="VendaCodigo" class="form-control" type="number" placeholder="Deixe vazio se for compra">
+                </div>
+                <div class="col-md-6">
+                    <label asp-for="CompraCodigo" class="form-label">Código da Compra (se A Pagar)</label>
+                    <input asp-for="CompraCodigo" class="form-control" type="number" placeholder="Deixe vazio se for venda">
+                </div>
+            </div>
+
+            <div class="d-flex gap-2">
+                <button type="submit" class="btn btn-carrara px-4">
+                    <i class="bi bi-check-lg me-1"></i>Cadastrar
+                </button>
+                <a asp-action="Index" class="btn btn-outline-secondary px-4">Cancelar</a>
+            </div>
+        </form>
+    </div>
+</div>

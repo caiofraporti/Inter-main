@@ -1,0 +1,102 @@
+@model List<Lancamento>
+
+@{
+    ViewData["Title"]         = "Contas";
+    ViewData["SidebarTitulo"] = "Contas";
+    string filtro = ViewBag.FiltroAtivo ?? "todas";
+}
+
+@section SidebarMenu {
+    <a asp-action="Create" class="nav-link"><i class="bi bi-plus-circle me-2"></i>Cadastrar</a>
+    <a asp-action="Index"  class="nav-link active"><i class="bi bi-list-ul me-2"></i>Listar</a>
+}
+
+@section HeaderNav {
+    <div class="d-flex gap-4">
+        <a asp-controller="Clientes"    asp-action="Index" class="text-decoration-none" style="color:#8b6f47">Clientes</a>
+        <a asp-controller="Fornecedores" asp-action="Index" class="text-decoration-none" style="color:#8b6f47">Fornecedores</a>
+    </div>
+}
+
+<div class="d-flex justify-content-between align-items-start mb-4 flex-wrap gap-3">
+    <div>
+        <h2 class="fw-normal mb-3">Todas as contas</h2>
+        @* Botões de filtro — cada um passa um parâmetro diferente na URL *@
+        <div class="d-flex flex-wrap gap-2">
+            <a asp-action="Index" class="btn btn-sm @(filtro=="todas"  ? "btn-carrara" : "btn-outline-secondary")">Todas</a>
+            <a asp-action="Index" asp-route-filtro="pagar"    class="btn btn-sm @(filtro=="pagar"    ? "btn-carrara" : "btn-outline-secondary")">A Pagar</a>
+            <a asp-action="Index" asp-route-filtro="receber"  class="btn btn-sm @(filtro=="receber"  ? "btn-carrara" : "btn-outline-secondary")">A Receber</a>
+            <a asp-action="Index" asp-route-filtro="pendentes" class="btn btn-sm @(filtro=="pendentes"? "btn-carrara" : "btn-outline-secondary")">Pendentes</a>
+            <a asp-action="Index" asp-route-filtro="pagas"    class="btn btn-sm @(filtro=="pagas"    ? "btn-carrara" : "btn-outline-secondary")">Pagas</a>
+        </div>
+    </div>
+    <input type="text" id="busca" class="form-control" style="width:220px"
+           placeholder="🔍 Procurar..." onkeyup="filtrarTabela()">
+</div>
+
+<div class="card shadow-sm">
+    <div class="card-body p-0">
+        <table class="table table-hover mb-0" id="tabela">
+            <thead class="table-light">
+                <tr>
+                    <th>#</th>
+                    <th>Parcela</th>
+                    <th>Valor</th>
+                    <th>Vencimento</th>
+                    <th>Pagamento</th>
+                    <th>Status</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var l in Model)
+                {
+                    @* Define a classe CSS do badge conforme a situação *@
+                    string badgeClass = l.Situacao?.Descricao switch {
+                        "Pago"     => "badge-pago",
+                        "Atrasado" => "badge-atrasado",
+                        _          => "badge-pendente"
+                    };
+
+                    <tr>
+                        <td>@l.Codigo</td>
+                        <td>@l.ParcelaNr</td>
+                        <td>R$ @l.Valor?.ToString("N2")</td>
+                        <td>@l.DataVencimento?.ToString("dd/MM/yyyy")</td>
+                        <td>@(l.DataPagamento?.ToString("dd/MM/yyyy") ?? "—")</td>
+                        <td>
+                            <span class="badge @badgeClass px-2 py-1 rounded-pill">
+                                @(l.Situacao?.Descricao ?? "—")
+                            </span>
+                        </td>
+                        <td>
+                            <div class="d-flex gap-2">
+                                <a asp-action="Edit" asp-route-id="@l.Codigo"
+                                   class="btn btn-sm" style="background:#7fd4c1">Alterar</a>
+                                <form asp-action="Delete" asp-route-id="@l.Codigo"
+                                      method="post" style="display:inline"
+                                      onsubmit="return confirm('Excluir esta conta?')">
+                                    @Html.AntiForgeryToken()
+                                    <button type="submit" class="btn btn-sm btn-danger">Excluir</button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                }
+                @if (!Model.Any())
+                {
+                    <tr><td colspan="7" class="text-center text-muted py-4">Nenhuma conta encontrada</td></tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+function filtrarTabela() {
+    const filtro = document.getElementById("busca").value.toLowerCase();
+    document.querySelectorAll("#tabela tbody tr").forEach(linha => {
+        linha.style.display = linha.innerText.toLowerCase().includes(filtro) ? "" : "none";
+    });
+}
+</script>

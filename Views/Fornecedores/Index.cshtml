@@ -1,0 +1,77 @@
+@* Views/Fornecedores/Index.cshtml *@
+@model List<Fornecedor>
+
+@{
+    ViewData["Title"]         = "Fornecedores";
+    ViewData["SidebarTitulo"] = "Fornecedores";
+}
+
+@section SidebarMenu {
+    <a asp-action="Create" class="nav-link"><i class="bi bi-plus-circle me-2"></i>Cadastrar</a>
+    <a asp-action="Index"  class="nav-link active"><i class="bi bi-list-ul me-2"></i>Listar</a>
+}
+
+@section HeaderNav {
+    <div class="d-flex gap-4">
+        <a asp-controller="Clientes" asp-action="Index" class="text-decoration-none" style="color:#8b6f47">Clientes</a>
+        <a asp-controller="Contas"   asp-action="Index" class="text-decoration-none" style="color:#8b6f47">Contas</a>
+    </div>
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="fw-normal">Todos os fornecedores</h2>
+    <input type="text" id="busca" class="form-control w-auto"
+           placeholder="🔍 Procurar..." onkeyup="filtrarTabela()">
+</div>
+
+<div class="card shadow-sm">
+    <div class="card-body p-0">
+        <table class="table table-hover mb-0" id="tabela">
+            <thead class="table-light">
+                <tr>
+                    <th>Nome / Razão Social</th>
+                    <th>CNPJ</th>
+                    <th>Telefone</th>
+                    <th>Cidade</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var f in Model)
+                {
+                    <tr>
+                        <td>@f.Pessoa?.Nome</td>
+                        <td>@f.Pessoa?.Documento</td>
+                        <td>@f.Pessoa?.Telefone</td>
+                        <td>@f.Pessoa?.Cidade</td>
+                        <td>
+                            <div class="d-flex gap-2">
+                                <a asp-action="Edit" asp-route-id="@f.PessoaId"
+                                   class="btn btn-sm" style="background:#7fd4c1">Alterar</a>
+                                <form asp-action="Delete" asp-route-id="@f.PessoaId"
+                                      method="post" style="display:inline"
+                                      onsubmit="return confirm('Excluir este fornecedor?')">
+                                    @Html.AntiForgeryToken()
+                                    <button type="submit" class="btn btn-sm btn-danger">Excluir</button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                }
+                @if (!Model.Any())
+                {
+                    <tr><td colspan="5" class="text-center text-muted py-4">Nenhum fornecedor cadastrado</td></tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+function filtrarTabela() {
+    const filtro = document.getElementById("busca").value.toLowerCase();
+    document.querySelectorAll("#tabela tbody tr").forEach(linha => {
+        linha.style.display = linha.innerText.toLowerCase().includes(filtro) ? "" : "none";
+    });
+}
+</script>

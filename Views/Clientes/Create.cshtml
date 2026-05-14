@@ -1,0 +1,122 @@
+@model MoveisCarrara.Models.Pessoa
+
+@{
+    ViewData["Title"]         = "Cadastrar Cliente";
+    ViewData["SidebarTitulo"] = "Clientes";
+}
+
+@section SidebarMenu {
+    <a asp-controller="Clientes" asp-action="Create" class="nav-link active">
+        <i class="bi bi-plus-circle me-2"></i>Cadastrar
+    </a>
+    <a asp-controller="Clientes" asp-action="Index" class="nav-link">
+        <i class="bi bi-list-ul me-2"></i>Listar
+    </a>
+}
+
+@section HeaderNav {
+    <div class="d-flex gap-4">
+        <a asp-controller="Fornecedores" asp-action="Index"
+           class="text-decoration-none" style="color:#8b6f47">Fornecedores</a>
+        <a asp-controller="Contas" asp-action="Index"
+           class="text-decoration-none" style="color:#8b6f47">Contas</a>
+    </div>
+}
+
+<div class="card shadow-sm" style="max-width:860px">
+    <div class="card-body p-4">
+        <h2 class="fw-normal mb-4">Cadastrar Cliente</h2>
+
+        @if (!ViewData.ModelState.IsValid && ViewData.ModelState.ErrorCount > 0)
+        {
+            <div class="alert alert-danger">
+                <strong>Corrija os erros abaixo:</strong>
+                <div asp-validation-summary="All"></div>
+            </div>
+        }
+
+        <form asp-action="Create" asp-controller="Clientes" method="post">
+            @Html.AntiForgeryToken()
+
+            <h5 class="text-muted border-bottom pb-2 mb-3">Informações pessoais</h5>
+            <div class="row g-3 mb-3">
+                <div class="col-md-6">
+                    <label class="form-label">Nome *</label>
+                    <input asp-for="Nome" class="form-control" placeholder="Nome completo">
+                    <span asp-validation-for="Nome" class="text-danger small"></span>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">Nome Social</label>
+                    <input asp-for="NomeSocial" class="form-control" placeholder="Se houver">
+                </div>
+            </div>
+            <div class="row g-3 mb-4">
+                <div class="col-md-6">
+                    <label class="form-label">CPF / CNPJ</label>
+                    <input asp-for="Documento" class="form-control" placeholder="000.000.000-00">
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">Tipo de Pessoa</label>
+                    <select asp-for="TipoPessoa" class="form-select">
+                        <option value="F">Pessoa Física</option>
+                        <option value="J">Pessoa Jurídica</option>
+                    </select>
+                </div>
+            </div>
+
+            <h5 class="text-muted border-bottom pb-2 mb-3">Informações de localidade</h5>
+            <div class="row g-3 mb-3">
+                <div class="col-md-3">
+                    <label class="form-label">CEP</label>
+                    <input asp-for="Cep" class="form-control" placeholder="00000-000">
+                </div>
+                <div class="col-md-5">
+                    <label class="form-label">Logradouro</label>
+                    <input asp-for="Logradouro" class="form-control" placeholder="Rua, Av...">
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label">Número</label>
+                    <input asp-for="Numero" class="form-control">
+                </div>
+            </div>
+            <div class="row g-3 mb-4">
+                <div class="col-md-4">
+                    <label class="form-label">Bairro</label>
+                    <input asp-for="Bairro" class="form-control">
+                </div>
+                <div class="col-md-5">
+                    <label class="form-label">Cidade</label>
+                    <input asp-for="Cidade" class="form-control">
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Tipo Endereço</label>
+                    <select asp-for="TipoEndereco" class="form-select">
+                        <option value="Residencial">Residencial</option>
+                        <option value="Comercial">Comercial</option>
+                    </select>
+                </div>
+            </div>
+
+            <h5 class="text-muted border-bottom pb-2 mb-3">Informações de contato</h5>
+            <div class="row g-3 mb-4">
+                <div class="col-md-6">
+                    <label class="form-label">Telefone</label>
+                    <input asp-for="Telefone" class="form-control" placeholder="(17) 99999-0000">
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">Email</label>
+                    <input asp-for="Email" class="form-control" type="email">
+                    <span asp-validation-for="Email" class="text-danger small"></span>
+                </div>
+            </div>
+
+            <div class="d-flex gap-2 mt-2">
+                <button type="submit" class="btn btn-carrara px-4">
+                    <i class="bi bi-check-lg me-1"></i>Cadastrar
+                </button>
+                <a asp-action="Index" asp-controller="Clientes"
+                   class="btn btn-outline-secondary px-4">Cancelar</a>
+            </div>
+        </form>
+    </div>
+</div>

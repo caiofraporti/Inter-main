@@ -1,0 +1,108 @@
+@* ============================================================
+   Views/Home/Dashboard.cshtml
+   Página principal após o login
+============================================================ *@
+
+@{
+    ViewData["Title"]         = "Dashboard";
+    ViewData["SidebarTitulo"] = "Dashboard";
+}
+
+@* Sem sidebar menu nesta tela — usamos a navbar do topo *@
+@section SidebarMenu {
+    <a asp-controller="Clientes"    asp-action="Index" class="nav-link">
+        <i class="bi bi-people me-2"></i>Clientes
+    </a>
+    <a asp-controller="Fornecedores" asp-action="Index" class="nav-link">
+        <i class="bi bi-truck me-2"></i>Fornecedores
+    </a>
+    <a asp-controller="Contas"       asp-action="Index" class="nav-link">
+        <i class="bi bi-cash-stack me-2"></i>Contas
+    </a>
+    <hr style="border-color:rgba(255,255,255,.3)">
+    <a asp-controller="Home" asp-action="Logout" class="nav-link text-warning">
+        <i class="bi bi-box-arrow-right me-2"></i>Sair
+    </a>
+}
+
+@section HeaderNav {
+    <span class="text-muted">
+        Bem-vindo, <strong>@ViewBag.Usuario</strong>
+    </span>
+}
+
+@* ── Conteúdo do dashboard ── *@
+<div class="row g-4">
+
+    @* ── Card: Contas a vencer ── *@
+    <div class="col-md-6">
+        <div class="card shadow-sm h-100">
+            <div class="card-header" style="background:#8b6f47; color:#fff;">
+                <h5 class="mb-0"><i class="bi bi-calendar-x me-2"></i>Vencimento de Contas</h5>
+            </div>
+            <div class="card-body p-0">
+                <ul class="list-group list-group-flush">
+                    @* 
+                        ViewBag.ContasVencer vem do DashboardController
+                        foreach percorre cada lançamento da lista
+                    *@
+                    @foreach (var conta in (List<Lancamento>)ViewBag.ContasVencer)
+                    {
+                        <li class="list-group-item">
+                            <div class="d-flex justify-content-between">
+                                <span class="fw-500">Lançamento #@conta.Codigo</span>
+                                <span class="text-danger fw-bold">
+                                    R$ @conta.Valor?.ToString("N2")
+                                </span>
+                            </div>
+                            <small class="text-muted">
+                                Venc: @conta.DataVencimento?.ToString("dd/MM/yyyy")
+                                — @(conta.Situacao?.Descricao ?? "—")
+                            </small>
+                        </li>
+                    }
+                    @if (!((List<Lancamento>)ViewBag.ContasVencer).Any())
+                    {
+                        <li class="list-group-item text-muted text-center py-4">
+                            Nenhuma conta a vencer
+                        </li>
+                    }
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    @* ── Card: Contas pagas no mês ── *@
+    <div class="col-md-6">
+        <div class="card shadow-sm h-100">
+            <div class="card-header" style="background:#8b6f47; color:#fff;">
+                <h5 class="mb-0"><i class="bi bi-check-circle me-2"></i>Recebidas no Mês</h5>
+            </div>
+            <div class="card-body p-0">
+                <ul class="list-group list-group-flush">
+                    @foreach (var conta in (List<Lancamento>)ViewBag.ContasPagas)
+                    {
+                        <li class="list-group-item">
+                            <div class="d-flex justify-content-between">
+                                <span>Lançamento #@conta.Codigo</span>
+                                <span class="text-success fw-bold">
+                                    R$ @conta.Valor?.ToString("N2")
+                                </span>
+                            </div>
+                            <small class="text-muted">
+                                Pago em: @conta.DataPagamento?.ToString("dd/MM/yyyy")
+                            </small>
+                        </li>
+                    }
+                    @if (!((List<Lancamento>)ViewBag.ContasPagas).Any())
+                    {
+                        <li class="list-group-item text-muted text-center py-4">
+                            Nenhum pagamento neste mês
+                        </li>
+                    }
+                </ul>
+            </div>
+        </div>
+    </div>
+
+</div>
