@@ -1,7 +1,5 @@
 // ============================================================
 // Data/AppDbContext.cs
-// Contexto do Entity Framework — é a "ponte" entre o C# e o banco
-// Segue o mesmo padrão do professor (DatabaseContext no exemplo dele)
 // ============================================================
 
 using Microsoft.EntityFrameworkCore;
@@ -9,36 +7,25 @@ using MoveisCarrara.Models;
 
 namespace MoveisCarrara.Data
 {
-    // AppDbContext herda de DbContext (classe base do Entity Framework)
     public class AppDbContext : DbContext
     {
-        // O construtor recebe as opções (string de conexão etc.)
-        // e repassa para a classe base — padrão obrigatório do EF
         public AppDbContext(DbContextOptions<AppDbContext> options)
             : base(options) { }
 
-        // -----------------------------------------------------------
-        // DbSet<T> representa uma tabela do banco
-        // Cada DbSet permite: Select, Insert, Update, Delete
-        // Ex: _context.Pessoas.ToList() = SELECT * FROM Pessoas
-        // -----------------------------------------------------------
-        public DbSet<Pessoa>      Pessoas      { get; set; }
-        public DbSet<Cliente>     Clientes     { get; set; }
-        public DbSet<Fornecedor>  Fornecedores { get; set; }
-        public DbSet<Funcionario> Funcionarios { get; set; }
-        public DbSet<Situacao>    Situacoes    { get; set; }
-        public DbSet<Lancamento>  Lancamentos  { get; set; }
-        public DbSet<TipoProduto>  TipoProdutos  { get; set; }
-        public DbSet<Material>     Materiais     { get; set; }
-        public DbSet<Venda>        Vendas        { get; set; }
-        public DbSet<Compra>       Compras       { get; set; }
+        public DbSet<Pessoa>           Pessoas           { get; set; }
+        public DbSet<Cliente>          Clientes          { get; set; }
+        public DbSet<Fornecedor>       Fornecedores      { get; set; }
+        public DbSet<Funcionario>      Funcionarios      { get; set; }
+        public DbSet<Situacao>         Situacoes         { get; set; }
+        public DbSet<Lancamento>       Lancamentos       { get; set; }
+        public DbSet<TipoProduto>      TipoProdutos      { get; set; }
+        public DbSet<Material>         Materiais         { get; set; }
+        public DbSet<Venda>            Vendas            { get; set; }
+        public DbSet<Compra>           Compras           { get; set; }
+        public DbSet<VendaTipoProduto> VendaTipoProdutos { get; set; }
 
-        // -----------------------------------------------------------
-        // OnModelCreating: configurações extras do mapeamento
-        // -----------------------------------------------------------
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            // Mapeia os nomes das colunas que diferem do padrão C#
             modelBuilder.Entity<Pessoa>(entity =>
             {
                 entity.ToTable("Pessoas");
@@ -84,6 +71,13 @@ namespace MoveisCarrara.Data
                 entity.Property(m => m.NomeMaterial).HasColumnName("nome_material");
                 entity.Property(m => m.Descricao).HasColumnName("descricao");
                 entity.Property(m => m.Preco).HasColumnName("preco");
+            });
+
+            // Chave primária composta: (venda_codigo, item)
+            modelBuilder.Entity<VendaTipoProduto>(entity =>
+            {
+                entity.HasKey(v => new { v.VendaCodigo, v.Item });
+                entity.ToTable("vendas_tipo_produtos");
             });
         }
     }

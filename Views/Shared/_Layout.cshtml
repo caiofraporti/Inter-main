@@ -136,11 +136,15 @@
         </div>
     </div>
 
+    @* Sections que as Views definem mas o layout não precisa renderizar *@
     @{ IgnoreSection("HeaderNav"); }
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
-    <!-- Marca o link ativo na topbar com base na URL atual -->
+    @* Scripts específicos de cada página (ex: Vendas/Create usa JS para itens dinâmicos) *@
+    @RenderSection("Scripts", required: false)
+
+    <!-- Marca o link ativo na topbar -->
     <script>
         (function () {
             var path = window.location.pathname.toLowerCase();

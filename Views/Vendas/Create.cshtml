@@ -3,6 +3,7 @@
 @{
     ViewData["Title"]         = "Cadastrar Venda";
     ViewData["SidebarTitulo"] = "Vendas";
+    var produtos = (List<TipoProduto>)ViewBag.Produtos;
 }
 
 @section SidebarMenu {
@@ -10,15 +11,7 @@
     <a asp-action="Index"  class="nav-link"><i class="bi bi-list-ul me-2"></i>Listar</a>
 }
 
-@section HeaderNav {
-    <div class="d-flex gap-4">
-        <a asp-controller="TipoProdutos" asp-action="Index" class="text-decoration-none" style="color:#8b6f47">Produtos</a>
-        <a asp-controller="Compras"      asp-action="Index" class="text-decoration-none" style="color:#8b6f47">Compras</a>
-        <a asp-controller="Clientes"     asp-action="Index" class="text-decoration-none" style="color:#8b6f47">Clientes</a>
-    </div>
-}
-
-<div class="card shadow-sm" style="max-width:760px">
+<div class="card shadow-sm" style="max-width:900px">
     <div class="card-body p-4">
         <h2 class="fw-normal mb-4">Cadastrar Venda</h2>
 
@@ -41,12 +34,12 @@
                     <span asp-validation-for="Data" class="text-danger small"></span>
                 </div>
                 <div class="col-md-4">
-                    <label asp-for="Total" class="form-label">Total (R$)</label>
-                    <input asp-for="Total" class="form-control" type="number" step="0.01" placeholder="0,00">
-                </div>
-                <div class="col-md-4">
                     <label asp-for="NrParcelas" class="form-label">Nº de Parcelas</label>
                     <input asp-for="NrParcelas" class="form-control" type="number" min="1" placeholder="1">
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label">Total (calculado)</label>
+                    <input type="text" id="totalDisplay" class="form-control" readonly placeholder="R$ 0,00" style="background:#f8f9fa">
                 </div>
             </div>
 
@@ -76,6 +69,46 @@
                 </div>
             </div>
 
+            <h5 class="text-muted border-bottom pb-2 mb-3 mt-2">Itens da venda</h5>
+            <div class="table-responsive mb-2">
+                <table class="table table-bordered align-middle" id="tabelaItens">
+                    <thead class="table-light">
+                        <tr>
+                            <th style="width:35%">Produto</th>
+                            <th style="width:10%">Qtd</th>
+                            <th style="width:15%">Preço Unit. (R$)</th>
+                            <th style="width:15%">Dimensões</th>
+                            <th style="width:15%">Subtotal</th>
+                            <th style="width:10%"></th>
+                        </tr>
+                    </thead>
+                    <tbody id="itensBody">
+                        <tr class="item-row">
+                            <td>
+                                <select name="itemProdutoId" class="form-select form-select-sm produto-select">
+                                    <option value="0">Selecione...</option>
+                                    @foreach (var p in produtos)
+                                    {
+                                        <option value="@p.Codigo" data-preco="@p.ValorUnitario.ToString("F2", System.Globalization.CultureInfo.InvariantCulture)">
+                                            @p.NomeProduto
+                                        </option>
+                                    }
+                                </select>
+                            </td>
+                            <td><input type="number" name="itemQtd" class="form-control form-control-sm item-qtd" value="1" min="1"></td>
+                            <td><input type="number" name="itemPreco" class="form-control form-control-sm item-preco" step="0.01" value="0"></td>
+                            <td><input type="text" name="itemDimensoes" class="form-control form-control-sm" placeholder="ex: 100x60"></td>
+                            <td><span class="item-subtotal text-muted">R$ 0,00</span></td>
+                            <td><button type="button" class="btn btn-sm btn-outline-danger btn-remover-item"><i class="bi bi-trash"></i></button></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <button type="button" class="btn btn-outline-secondary btn-sm mb-4" id="btnAddItem">
+                <i class="bi bi-plus-circle me-1"></i>Adicionar item
+            </button>
+
             <div class="d-flex gap-2">
                 <button type="submit" class="btn btn-carrara px-4">
                     <i class="bi bi-check-lg me-1"></i>Cadastrar
@@ -85,3 +118,71 @@
         </form>
     </div>
 </div>
+
+@section Scripts {
+<script>
+// Produtos disponíveis para clonar
+var produtosOptions = `@foreach (var p in produtos) {
+    <text><option value="@p.Codigo" data-preco="@p.ValorUnitario.ToString("F2", System.Globalization.CultureInfo.InvariantCulture)">@p.NomeProduto</option></text>
+}`;
+
+function calcularLinha(row) {
+    var qtd   = parseFloat(row.querySelector('.item-qtd').value)   || 0;
+    var preco = parseFloat(row.querySelector('.item-preco').value) || 0;
+    var sub   = qtd * preco;
+    row.querySelector('.item-subtotal').textContent = 'R$ ' + sub.toFixed(2).replace('.', ',');
+    calcularTotal();
+}
+
+function calcularTotal() {
+    var total = 0;
+    document.querySelectorAll('.item-subtotal').forEach(function(el) {
+        var v = el.textContent.replace('R$ ', '').replace(',', '.');
+        total += parseFloat(v) || 0;
+    });
+    document.getElementById('totalDisplay').value = 'R$ ' + total.toFixed(2).replace('.', ',');
+}
+
+function bindLinha(row) {
+    row.querySelector('.produto-select').addEventListener('change', function() {
+        var opt = this.options[this.selectedIndex];
+        var preco = opt.getAttribute('data-preco') || '0';
+        row.querySelector('.item-preco').value = parseFloat(preco).toFixed(2);
+        calcularLinha(row);
+    });
+    row.querySelector('.item-qtd').addEventListener('input', function() { calcularLinha(row); });
+    row.querySelector('.item-preco').addEventListener('input', function() { calcularLinha(row); });
+    row.querySelector('.btn-remover-item').addEventListener('click', function() {
+        if (document.querySelectorAll('.item-row').length > 1) {
+            row.remove();
+            calcularTotal();
+        }
+    });
+}
+
+// Bind na linha inicial
+document.querySelectorAll('.item-row').forEach(bindLinha);
+
+// Adicionar nova linha
+document.getElementById('btnAddItem').addEventListener('click', function() {
+    var tbody = document.getElementById('itensBody');
+    var newRow = document.createElement('tr');
+    newRow.className = 'item-row';
+    newRow.innerHTML = `
+        <td>
+            <select name="itemProdutoId" class="form-select form-select-sm produto-select">
+                <option value="0">Selecione...</option>
+                ${produtosOptions}
+            </select>
+        </td>
+        <td><input type="number" name="itemQtd" class="form-control form-control-sm item-qtd" value="1" min="1"></td>
+        <td><input type="number" name="itemPreco" class="form-control form-control-sm item-preco" step="0.01" value="0"></td>
+        <td><input type="text" name="itemDimensoes" class="form-control form-control-sm" placeholder="ex: 100x60"></td>
+        <td><span class="item-subtotal text-muted">R$ 0,00</span></td>
+        <td><button type="button" class="btn btn-sm btn-outline-danger btn-remover-item"><i class="bi bi-trash"></i></button></td>
+    `;
+    tbody.appendChild(newRow);
+    bindLinha(newRow);
+});
+</script>
+}
