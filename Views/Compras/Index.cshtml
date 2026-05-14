@@ -1,0 +1,81 @@
+@model List<Compra>
+
+@{
+    ViewData["Title"]         = "Compras";
+    ViewData["SidebarTitulo"] = "Compras";
+}
+
+@section SidebarMenu {
+    <a asp-action="Create" class="nav-link"><i class="bi bi-plus-circle me-2"></i>Cadastrar</a>
+    <a asp-action="Index"  class="nav-link active"><i class="bi bi-list-ul me-2"></i>Listar</a>
+}
+
+@section HeaderNav {
+    <div class="d-flex gap-4">
+        <a asp-controller="Materiais"    asp-action="Index" class="text-decoration-none" style="color:#8b6f47">Materiais</a>
+        <a asp-controller="Vendas"       asp-action="Index" class="text-decoration-none" style="color:#8b6f47">Vendas</a>
+        <a asp-controller="Fornecedores" asp-action="Index" class="text-decoration-none" style="color:#8b6f47">Fornecedores</a>
+    </div>
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="fw-normal">Todas as compras</h2>
+    <input type="text" id="busca" class="form-control w-auto"
+           placeholder="🔍 Procurar..." onkeyup="filtrarTabela()">
+</div>
+
+<div class="card shadow-sm">
+    <div class="card-body p-0">
+        <table class="table table-hover mb-0" id="tabela">
+            <thead class="table-light">
+                <tr>
+                    <th>#</th>
+                    <th>Data</th>
+                    <th>Fornecedor</th>
+                    <th>Funcionário</th>
+                    <th>Parcelas</th>
+                    <th>Total</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var c in Model)
+                {
+                    <tr>
+                        <td class="text-muted">@c.Codigo</td>
+                        <td>@c.Data.ToString("dd/MM/yyyy")</td>
+                        <td>@(c.Fornecedor?.Pessoa?.Nome ?? "—")</td>
+                        <td>@(c.Funcionario?.Pessoa?.Nome ?? "—")</td>
+                        <td>@(c.NrParcelas?.ToString() ?? "—")</td>
+                        <td>@(c.Total.HasValue ? "R$ " + c.Total.Value.ToString("N2") : "—")</td>
+                        <td>
+                            <div class="d-flex gap-2">
+                                <a asp-action="Edit" asp-route-id="@c.Codigo"
+                                   class="btn btn-sm" style="background:#7fd4c1">Alterar</a>
+                                <form asp-action="Delete" asp-route-id="@c.Codigo"
+                                      method="post" style="display:inline"
+                                      onsubmit="return confirm('Excluir esta compra?')">
+                                    @Html.AntiForgeryToken()
+                                    <button type="submit" class="btn btn-sm btn-danger">Excluir</button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                }
+                @if (!Model.Any())
+                {
+                    <tr><td colspan="7" class="text-center text-muted py-4">Nenhuma compra cadastrada</td></tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+function filtrarTabela() {
+    const filtro = document.getElementById("busca").value.toLowerCase();
+    document.querySelectorAll("#tabela tbody tr").forEach(linha => {
+        linha.style.display = linha.innerText.toLowerCase().includes(filtro) ? "" : "none";
+    });
+}
+</script>

@@ -1,0 +1,81 @@
+@model List<Venda>
+
+@{
+    ViewData["Title"]         = "Vendas";
+    ViewData["SidebarTitulo"] = "Vendas";
+}
+
+@section SidebarMenu {
+    <a asp-action="Create" class="nav-link"><i class="bi bi-plus-circle me-2"></i>Cadastrar</a>
+    <a asp-action="Index"  class="nav-link active"><i class="bi bi-list-ul me-2"></i>Listar</a>
+}
+
+@section HeaderNav {
+    <div class="d-flex gap-4">
+        <a asp-controller="TipoProdutos" asp-action="Index" class="text-decoration-none" style="color:#8b6f47">Produtos</a>
+        <a asp-controller="Compras"      asp-action="Index" class="text-decoration-none" style="color:#8b6f47">Compras</a>
+        <a asp-controller="Clientes"     asp-action="Index" class="text-decoration-none" style="color:#8b6f47">Clientes</a>
+    </div>
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="fw-normal">Todas as vendas</h2>
+    <input type="text" id="busca" class="form-control w-auto"
+           placeholder="🔍 Procurar..." onkeyup="filtrarTabela()">
+</div>
+
+<div class="card shadow-sm">
+    <div class="card-body p-0">
+        <table class="table table-hover mb-0" id="tabela">
+            <thead class="table-light">
+                <tr>
+                    <th>#</th>
+                    <th>Data</th>
+                    <th>Cliente</th>
+                    <th>Funcionário</th>
+                    <th>Parcelas</th>
+                    <th>Total</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var v in Model)
+                {
+                    <tr>
+                        <td class="text-muted">@v.Codigo</td>
+                        <td>@v.Data.ToString("dd/MM/yyyy")</td>
+                        <td>@(v.Cliente?.Pessoa?.Nome ?? "—")</td>
+                        <td>@(v.Funcionario?.Pessoa?.Nome ?? "—")</td>
+                        <td>@(v.NrParcelas?.ToString() ?? "—")</td>
+                        <td>@(v.Total.HasValue ? "R$ " + v.Total.Value.ToString("N2") : "—")</td>
+                        <td>
+                            <div class="d-flex gap-2">
+                                <a asp-action="Edit" asp-route-id="@v.Codigo"
+                                   class="btn btn-sm" style="background:#7fd4c1">Alterar</a>
+                                <form asp-action="Delete" asp-route-id="@v.Codigo"
+                                      method="post" style="display:inline"
+                                      onsubmit="return confirm('Excluir esta venda?')">
+                                    @Html.AntiForgeryToken()
+                                    <button type="submit" class="btn btn-sm btn-danger">Excluir</button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                }
+                @if (!Model.Any())
+                {
+                    <tr><td colspan="7" class="text-center text-muted py-4">Nenhuma venda cadastrada</td></tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+function filtrarTabela() {
+    const filtro = document.getElementById("busca").value.toLowerCase();
+    document.querySelectorAll("#tabela tbody tr").forEach(linha => {
+        linha.style.display = linha.innerText.toLowerCase().includes(filtro) ? "" : "none";
+    });
+}
+</script>

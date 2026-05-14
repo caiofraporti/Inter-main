@@ -28,6 +28,10 @@ namespace MoveisCarrara.Data
         public DbSet<Funcionario> Funcionarios { get; set; }
         public DbSet<Situacao>    Situacoes    { get; set; }
         public DbSet<Lancamento>  Lancamentos  { get; set; }
+        public DbSet<TipoProduto>  TipoProdutos  { get; set; }
+        public DbSet<Material>     Materiais     { get; set; }
+        public DbSet<Venda>        Vendas        { get; set; }
+        public DbSet<Compra>       Compras       { get; set; }
 
         // -----------------------------------------------------------
         // OnModelCreating: configurações extras do mapeamento
@@ -64,6 +68,22 @@ namespace MoveisCarrara.Data
             {
                 entity.Property(s => s.Codigo).HasColumnName("codigo");
                 entity.Property(s => s.Descricao).HasColumnName("descricao");
+            });
+
+            modelBuilder.Entity<TipoProduto>(entity =>
+            {
+                entity.Property(t => t.Codigo).HasColumnName("codigo");
+                entity.Property(t => t.NomeProduto).HasColumnName("nome_produto");
+                entity.Property(t => t.Descricao).HasColumnName("descricao");
+                entity.Property(t => t.ValorUnitario).HasColumnName("valor_unitario");
+            });
+
+            modelBuilder.Entity<Material>(entity =>
+            {
+                entity.Property(m => m.Codigo).HasColumnName("codigo");
+                entity.Property(m => m.NomeMaterial).HasColumnName("nome_material");
+                entity.Property(m => m.Descricao).HasColumnName("descricao");
+                entity.Property(m => m.Preco).HasColumnName("preco");
             });
         }
     }

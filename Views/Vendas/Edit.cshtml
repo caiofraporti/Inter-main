@@ -1,0 +1,89 @@
+@model Venda
+
+@{
+    ViewData["Title"]         = "Alterar Venda";
+    ViewData["SidebarTitulo"] = "Vendas";
+}
+
+@section SidebarMenu {
+    <a asp-action="Create" class="nav-link"><i class="bi bi-plus-circle me-2"></i>Cadastrar</a>
+    <a asp-action="Index"  class="nav-link"><i class="bi bi-list-ul me-2"></i>Listar</a>
+    <a class="nav-link active"><i class="bi bi-pencil me-2"></i>Alterar</a>
+}
+
+@section HeaderNav {
+    <div class="d-flex gap-4">
+        <a asp-controller="TipoProdutos" asp-action="Index" class="text-decoration-none" style="color:#8b6f47">Produtos</a>
+        <a asp-controller="Compras"      asp-action="Index" class="text-decoration-none" style="color:#8b6f47">Compras</a>
+        <a asp-controller="Clientes"     asp-action="Index" class="text-decoration-none" style="color:#8b6f47">Clientes</a>
+    </div>
+}
+
+<div class="card shadow-sm" style="max-width:760px">
+    <div class="card-body p-4">
+        <h2 class="fw-normal mb-4">Alterar Venda</h2>
+
+        <form asp-action="Edit" asp-route-id="@Model.Codigo" method="post">
+            @Html.AntiForgeryToken()
+
+            <div asp-validation-summary="All" class="alert alert-danger"
+                 style="display:@(ViewData.ModelState.ErrorCount > 0 ? "block" : "none")"></div>
+
+            <h5 class="text-muted border-bottom pb-2 mb-3">Dados da venda</h5>
+            <div class="row g-3 mb-3">
+                <div class="col-md-4">
+                    <label asp-for="Data" class="form-label">Data *</label>
+                    <input asp-for="Data" class="form-control" type="date">
+                    <span asp-validation-for="Data" class="text-danger small"></span>
+                </div>
+                <div class="col-md-4">
+                    <label asp-for="Total" class="form-label">Total (R$)</label>
+                    <input asp-for="Total" class="form-control" type="number" step="0.01">
+                </div>
+                <div class="col-md-4">
+                    <label asp-for="NrParcelas" class="form-label">Nº de Parcelas</label>
+                    <input asp-for="NrParcelas" class="form-control" type="number" min="1">
+                </div>
+            </div>
+
+            <h5 class="text-muted border-bottom pb-2 mb-3 mt-2">Responsáveis</h5>
+            <div class="row g-3 mb-4">
+                <div class="col-md-6">
+                    <label asp-for="ClienteId" class="form-label">Cliente *</label>
+                    <select asp-for="ClienteId" class="form-select">
+                        <option value="">Selecione...</option>
+                        @foreach (var c in (List<Cliente>)ViewBag.Clientes)
+                        {
+                            <option value="@c.PessoaId"
+                                    @(c.PessoaId == Model.ClienteId ? "selected" : "")>
+                                @c.Pessoa?.Nome
+                            </option>
+                        }
+                    </select>
+                    <span asp-validation-for="ClienteId" class="text-danger small"></span>
+                </div>
+                <div class="col-md-6">
+                    <label asp-for="FuncionarioId" class="form-label">Funcionário *</label>
+                    <select asp-for="FuncionarioId" class="form-select">
+                        <option value="">Selecione...</option>
+                        @foreach (var f in (List<Funcionario>)ViewBag.Funcionarios)
+                        {
+                            <option value="@f.PessoaId"
+                                    @(f.PessoaId == Model.FuncionarioId ? "selected" : "")>
+                                @f.Pessoa?.Nome
+                            </option>
+                        }
+                    </select>
+                    <span asp-validation-for="FuncionarioId" class="text-danger small"></span>
+                </div>
+            </div>
+
+            <div class="d-flex gap-2">
+                <button type="submit" class="btn btn-carrara px-4">
+                    <i class="bi bi-check-lg me-1"></i>Salvar Alterações
+                </button>
+                <a asp-action="Index" class="btn btn-outline-secondary px-4">Cancelar</a>
+            </div>
+        </form>
+    </div>
+</div>
