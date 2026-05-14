@@ -3,17 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    
-    <!-- RenderSection permite que cada página defina seu próprio título -->
     <title>Móveis Carrara — @ViewData["Title"]</title>
 
-    <!-- Bootstrap 5 via CDN (sem precisar instalar nada) -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Bootstrap Icons -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
 
     <style>
-        /* ── Cores do projeto ── */
         :root {
             --marrom:       #8b6f47;
             --marrom-escuro:#6f5638;
@@ -21,60 +16,78 @@
 
         body { min-height: 100vh; display: flex; flex-direction: row; }
 
-        /* ── Sidebar lateral ── */
         .sidebar {
-            width: 260px;
+            width: 220px;
             min-height: 100vh;
             background-color: var(--marrom);
-            padding: 40px 30px;
+            padding: 32px 24px;
             flex-shrink: 0;
+            display: flex;
+            flex-direction: column;
         }
-        .sidebar h1 { color: #fff; font-size: 2rem; font-weight: 400; }
-        .sidebar-underline { width: 60px; height: 3px; background: #fff; margin: 8px 0 40px; }
-        .sidebar .nav-link { color: rgba(255,255,255,.85); font-size: 1.1rem; padding: 10px 0; }
+        .sidebar h1 { color: #fff; font-size: 1.6rem; font-weight: 400; margin: 0; }
+        .sidebar-underline { width: 50px; height: 3px; background: rgba(255,255,255,0.6); margin: 8px 0 28px; }
+        .sidebar .nav-link { color: rgba(255,255,255,.8); font-size: 1rem; padding: 8px 0; }
         .sidebar .nav-link:hover,
         .sidebar .nav-link.active { color: #fff; font-weight: 600; }
 
-        /* ── Área principal ── */
-        .main-content { flex: 1; background: #f5f5f5; padding: 40px; }
+        .main-wrapper { flex: 1; display: flex; flex-direction: column; min-width: 0; background: #f5f5f5; }
 
-        /* ── Botão de voltar ao dashboard ── */
-        .btn-dashboard {
-            width: 46px; height: 46px; border-radius: 50%;
+        .topbar {
+            background: #fff;
+            border-bottom: 1px solid #e8e0d6;
+            padding: 0 20px;
+            height: 52px;
+            display: flex;
+            align-items: center;
+            gap: 2px;
+            flex-shrink: 0;
+            overflow-x: auto;
+        }
+        .topbar-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 5px 10px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            color: #6b5a3e;
+            text-decoration: none;
+            white-space: nowrap;
+        }
+        .topbar-link:hover { background: #f5ede2; color: var(--marrom-escuro); }
+        .topbar-sep { width: 1px; height: 20px; background: #e0d5c5; margin: 0 6px; flex-shrink: 0; }
+
+        .btn-home {
+            width: 34px; height: 34px; border-radius: 50%;
             background: var(--marrom); color: #fff;
             display: flex; align-items: center; justify-content: center;
-            text-decoration: none; font-size: 1.2rem;
-            box-shadow: 0 2px 8px rgba(0,0,0,.2);
+            text-decoration: none; font-size: 0.95rem;
             transition: transform .2s;
+            flex-shrink: 0;
+            margin-left: auto;
         }
-        .btn-dashboard:hover { transform: scale(1.1); color: #fff; }
+        .btn-home:hover { transform: scale(1.1); color: #fff; }
 
-        /* ── Botões com cor marrom ── */
+        .main-content { flex: 1; padding: 32px 36px; }
+
         .btn-carrara { background: var(--marrom); color: #fff; border: none; }
         .btn-carrara:hover { background: var(--marrom-escuro); color: #fff; }
 
-        /* ── Alertas de sucesso/erro ── */
         .alert { border-radius: 6px; }
+        .table thead th { color: #888; font-weight: 500; font-size: .82rem; text-transform: uppercase; }
 
-        /* ── Tabela ── */
-        .table thead th { color: #888; font-weight: 500; font-size: .85rem; text-transform: uppercase; }
-
-        /* ── Badges de status ── */
         .badge-pendente { background: #fff3cd; color: #856404; }
         .badge-pago     { background: #d4edda; color: #155724; }
         .badge-atrasado { background: #f8d7da; color: #721c24; }
     </style>
 </head>
-<body class="d-flex">
+<body>
 
-    <!-- ═══════════════════════════════════════════
-         SIDEBAR — aparece em todas as páginas
-         @ViewData["SidebarTitulo"] e SidebarMenu
-         são definidos em cada View
-    ═══════════════════════════════════════════ -->
-    <div class="sidebar d-flex flex-column">
+    <!-- SIDEBAR -->
+    <div class="sidebar">
         <div>
-            <h1>@ViewData["SidebarTitulo"]</h1>
+            <h1>@(ViewData["SidebarTitulo"] ?? "")</h1>
             <div class="sidebar-underline"></div>
         </div>
         <nav class="nav flex-column">
@@ -82,44 +95,64 @@
         </nav>
     </div>
 
-    <!-- ═══════════════════════════════════════════
-         CONTEÚDO PRINCIPAL
-    ═══════════════════════════════════════════ -->
-    <div class="main-content flex-grow-1">
+    <!-- MAIN -->
+    <div class="main-wrapper">
 
-        <!-- Botão de voltar ao dashboard (canto superior direito) -->
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <div>
-                @RenderSection("HeaderNav", required: false)
-            </div>
-            <a href="/Home/Dashboard" class="btn-dashboard" title="Voltar ao Dashboard">
-                <i class="bi bi-house"></i>
-            </a>
+        <!-- Topbar global com todos os módulos -->
+        <div class="topbar">
+            <a href="/Clientes/Index"     class="topbar-link"><i class="bi bi-people"></i> Clientes</a>
+            <a href="/Fornecedores/Index" class="topbar-link"><i class="bi bi-truck"></i> Fornecedores</a>
+            <div class="topbar-sep"></div>
+            <a href="/Vendas/Index"       class="topbar-link"><i class="bi bi-cart3"></i> Vendas</a>
+            <a href="/Compras/Index"      class="topbar-link"><i class="bi bi-bag"></i> Compras</a>
+            <div class="topbar-sep"></div>
+            <a href="/TipoProdutos/Index" class="topbar-link"><i class="bi bi-box"></i> Produtos</a>
+            <a href="/Materiais/Index"    class="topbar-link"><i class="bi bi-tools"></i> Materiais</a>
+            <div class="topbar-sep"></div>
+            <a href="/Contas/Index"       class="topbar-link"><i class="bi bi-cash-stack"></i> Contas</a>
+            <a href="/Home/Dashboard"     class="btn-home" title="Dashboard"><i class="bi bi-house"></i></a>
         </div>
 
-        <!-- Mensagem de sucesso (via TempData do controller) -->
-        @if (TempData["Sucesso"] != null)
-        {
-            <div class="alert alert-success alert-dismissible fade show" role="alert">
-                <i class="bi bi-check-circle me-2"></i>@TempData["Sucesso"]
-                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-            </div>
-        }
+        <!-- Conteúdo da página -->
+        <div class="main-content">
 
-        <!-- Mensagem de erro -->
-        @if (TempData["Erro"] != null)
-        {
-            <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                <i class="bi bi-exclamation-triangle me-2"></i>@TempData["Erro"]
-                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-            </div>
-        }
+            @if (TempData["Sucesso"] != null)
+            {
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    <i class="bi bi-check-circle me-2"></i>@TempData["Sucesso"]
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            }
 
-        <!-- RenderBody() = onde o conteúdo de cada View é inserido -->
-        @RenderBody()
+            @if (TempData["Erro"] != null)
+            {
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <i class="bi bi-exclamation-triangle me-2"></i>@TempData["Erro"]
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            }
+
+            @RenderBody()
+        </div>
     </div>
 
-    <!-- Bootstrap JS -->
+    @{ IgnoreSection("HeaderNav"); }
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Marca o link ativo na topbar com base na URL atual -->
+    <script>
+        (function () {
+            var path = window.location.pathname.toLowerCase();
+            document.querySelectorAll('.topbar-link').forEach(function (a) {
+                var href = a.getAttribute('href').toLowerCase().replace('/index', '');
+                if (href !== '/' && path.toLowerCase().replace('/index', '').startsWith(href)) {
+                    a.style.background = '#f0e6d6';
+                    a.style.color = '#6f5638';
+                    a.style.fontWeight = '600';
+                }
+            });
+        })();
+    </script>
 </body>
 </html>

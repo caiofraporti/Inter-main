@@ -55,7 +55,7 @@
                         @foreach (var f in (List<Fornecedor>)ViewBag.Fornecedores)
                         {
                             <option value="@f.PessoaId"
-                                    @(f.PessoaId == Model.FornecedorId ? "selected" : "")>
+                                    selected="@(f.PessoaId == Model.FornecedorId ? "selected" : null)">
                                 @f.Pessoa?.Nome
                             </option>
                         }
@@ -69,7 +69,7 @@
                         @foreach (var f in (List<Funcionario>)ViewBag.Funcionarios)
                         {
                             <option value="@f.PessoaId"
-                                    @(f.PessoaId == Model.FuncionarioId ? "selected" : "")>
+                                    selected="@(f.PessoaId == Model.FuncionarioId ? "selected" : null)">
                                 @f.Pessoa?.Nome
                             </option>
                         }

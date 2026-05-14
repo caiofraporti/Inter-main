@@ -10,14 +10,26 @@
 
 @* Sem sidebar menu nesta tela — usamos a navbar do topo *@
 @section SidebarMenu {
-    <a asp-controller="Clientes"    asp-action="Index" class="nav-link">
+    <a asp-controller="Clientes" asp-action="Index" class="nav-link">
         <i class="bi bi-people me-2"></i>Clientes
     </a>
     <a asp-controller="Fornecedores" asp-action="Index" class="nav-link">
         <i class="bi bi-truck me-2"></i>Fornecedores
     </a>
-    <a asp-controller="Contas"       asp-action="Index" class="nav-link">
+    <a asp-controller="Contas" asp-action="Index" class="nav-link">
         <i class="bi bi-cash-stack me-2"></i>Contas
+    </a>
+    <a asp-controller="Vendas" asp-action="Index" class="nav-link">
+        <i class="bi bi-cart me-2"></i>Vendas
+    </a>
+    <a asp-controller="Compras" asp-action="Index" class="nav-link">
+        <i class="bi bi-bag me-2"></i>Compras
+    </a>
+    <a asp-controller="TipoProdutos" asp-action="Index" class="nav-link">
+        <i class="bi bi-box me-2"></i>Produtos
+    </a>
+    <a asp-controller="Materiais" asp-action="Index" class="nav-link">
+        <i class="bi bi-tools me-2"></i>Materiais
     </a>
     <hr style="border-color:rgba(255,255,255,.3)">
     <a asp-controller="Home" asp-action="Logout" class="nav-link text-warning">
