@@ -7,28 +7,32 @@ GO
 -- ===========================
 -- TABELA PESSOAS
 -- ===========================
-CREATE TABLE Pessoas (
-    id INT IDENTITY(1,1) PRIMARY KEY,
-    nome VARCHAR(100) NOT NULL,
-    nome_social VARCHAR(100),
-    tipo_pessoa char(1),
-    documento VARCHAR(50),
-    tipo_endereco VARCHAR(50),
-    logradouro VARCHAR(100),
-    numero VARCHAR(10),
-    bairro VARCHAR(50),
-    cidade VARCHAR(50),
-    cep VARCHAR(20),
-    telefone VARCHAR(20),
-    email VARCHAR(100)
+CREATE TABLE Pessoas 
+(
+    id              INT                    IDENTITY(1,1) PRIMARY KEY,
+    nome            VARCHAR(100)           NOT NULL,
+    nome_social     VARCHAR(100),
+    tipo_pessoa     CHAR(1),
+
+    documento       VARCHAR(50)            UNIQUE,
+    email           VARCHAR(100)           UNIQUE,
+    telefone        VARCHAR(20)            UNIQUE,
+
+    tipo_endereco   VARCHAR(50),
+    logradouro      VARCHAR(100),
+    numero          VARCHAR(10),
+    bairro          VARCHAR(50),
+    cidade          VARCHAR(50),
+    cep             VARCHAR(20)
 )
-go
+GO
 
 -- ===========================
 -- CLIENTES
 -- ===========================
-CREATE TABLE Clientes (
-    pessoa_id INT PRIMARY KEY,
+CREATE TABLE Clientes 
+(
+    pessoa_id       INT                 PRIMARY KEY,
     FOREIGN KEY (pessoa_id) REFERENCES Pessoas(id)
 )
 go
@@ -36,33 +40,37 @@ go
 -- ===========================
 -- FORNECEDORES
 -- ===========================
-CREATE TABLE Fornecedores (
-    pessoa_id INT PRIMARY KEY,
+CREATE TABLE Fornecedores 
+(
+    pessoa_id       INT                 PRIMARY KEY,
     FOREIGN KEY (pessoa_id) REFERENCES Pessoas(id)
 )
 go
 
 -- ===========================
--- USU�RIOS
+-- FUNCIONÁRIOS
 -- ===========================
-CREATE TABLE Funcionarios (
-    pessoa_id INT PRIMARY KEY,
-    usuario VARCHAR(50) NOT NULL,
-    senha VARCHAR(200) NOT NULL,
+CREATE TABLE Funcionarios 
+(
+    pessoa_id       INT                 PRIMARY KEY,
+    usuario         VARCHAR(50)         NOT NULL UNIQUE,
+    senha           VARCHAR(200)        NOT NULL,
+
     FOREIGN KEY (pessoa_id) REFERENCES Pessoas(id)
 )
-go
+GO
 
 -- ===========================
--- TIPO_PRODUTOS
+-- PRODUTOS
 -- ===========================
-CREATE TABLE Tipo_Produtos (
-    codigo INT IDENTITY(1,1) PRIMARY KEY,
-    nome_produto VARCHAR(100) NOT NULL,
-    descricao VARCHAR(200),
-    valor_unitario DECIMAL(10,2) NOT NULL
+CREATE TABLE Produtos 
+(
+    codigo          INT                 IDENTITY(1,1) PRIMARY KEY,
+    nome_produto    VARCHAR(100)        NOT NULL,
+    descricao       VARCHAR(200),
+    valor_unitario  DECIMAL(10,2)       NOT NULL
 )
-go
+GO
 
 -- =========================================================
 -- MATERIAIS
@@ -70,23 +78,22 @@ go
 
 CREATE TABLE Materiais
 (
-    codigo INT IDENTITY(1,1) PRIMARY KEY,
-    nome_material VARCHAR(100) NOT NULL,
-    descricao VARCHAR(200),
-    preco DECIMAL(10,2) NOT NULL
+    codigo          INT                 IDENTITY(1,1) PRIMARY KEY,
+    nome_material   VARCHAR(100)        NOT NULL
 )
 GO
 
 -- ===========================
 -- VENDAS
 -- ===========================
-CREATE TABLE Vendas (
-    codigo INT IDENTITY(1,1) PRIMARY KEY,
-    data DATE NOT NULL,
-    total DECIMAL(10,2),
-    nr_parcelas INT,
-    cliente_id INT NOT NULL,
-    funcionario_id INT NOT NULL,
+CREATE TABLE Vendas 
+(
+    codigo          INT                 IDENTITY(1,1) PRIMARY KEY,
+    data            DATE                NOT NULL,
+    total           DECIMAL(10,2),
+    nr_parcelas     INT,
+    cliente_id      INT                 NOT NULL,
+    funcionario_id  INT                 NOT NULL,
     FOREIGN KEY (cliente_id) REFERENCES Clientes(pessoa_id),
     FOREIGN KEY (funcionario_id) REFERENCES Funcionarios(pessoa_id)
 )
@@ -95,40 +102,43 @@ go
 -- ===========================
 -- COMPRAS
 -- ===========================
-CREATE TABLE Compras (
-    codigo INT IDENTITY(1,1) PRIMARY KEY,
-    data     DATE NOT NULL,
-    total DECIMAL(10,2),
-    nr_parcelas INT,
-    fornecedor_id INT NOT NULL,
-    funcionario_id INT NOT NULL,
+CREATE TABLE Compras 
+(
+    codigo          INT                 IDENTITY(1,1) PRIMARY KEY,
+    data            DATE                NOT NULL,
+    total           DECIMAL(10,2),
+    nr_parcelas     INT,
+    fornecedor_id   INT                 NOT NULL,
+    funcionario_id  INT                 NOT NULL,
     FOREIGN KEY (fornecedor_id) REFERENCES Fornecedores(pessoa_id),
     FOREIGN KEY (funcionario_id) REFERENCES Funcionarios(pessoa_id)
 )
 
 
 -- ===========================
--- SITUA��O
+-- SITUACAO
 -- ===========================
-CREATE TABLE Situacao (
-    codigo INT IDENTITY(1,1) not null PRIMARY KEY,
-    descricao VARCHAR(30) 
+CREATE TABLE Situacao 
+(
+    codigo          INT                     IDENTITY(1,1) not null PRIMARY KEY,
+    descricao       VARCHAR(30) 
 )
 go
 
 
 -- ===========================
--- LAN�AMENTOS
+-- LANCAMENTOS
 -- ===========================
-CREATE TABLE Lancamentos (
-    codigo INT IDENTITY(1,1) PRIMARY KEY,
-    valor DECIMAL(10,2),
-    parcela_nr varchar(10),
+CREATE TABLE Lancamentos 
+(
+    codigo          INT                     IDENTITY(1,1) PRIMARY KEY,
+    valor           DECIMAL(10,2),
+    parcela_nr      VARCHAR(10),
     data_vencimento DATE,
-    data_pagamento DATE,
-    venda_codigo INT NULL,
-    compra_codigo INT NULL,
-    situacao_codigo INT NULL,
+    data_pagamento  DATE,
+    venda_codigo    INT                     NULL,
+    compra_codigo   INT                     NULL,
+    situacao_codigo INT                     NULL,
     FOREIGN KEY (venda_codigo) REFERENCES Vendas(codigo),
     FOREIGN KEY (compra_codigo) REFERENCES Compras(codigo),
     FOREIGN KEY (situacao_codigo) REFERENCES Situacao(codigo)
@@ -141,15 +151,16 @@ go
 -- VENDAS x TIPO_PRODUTOS
 -- =========================================================
 
-CREATE TABLE vendas_tipo_produtos
+CREATE TABLE vendas_produtos
 (
-    venda_codigo INT NOT NULL,
-    tipo_produto_codigo INT NOT NULL,
+    venda_codigo    INT                     NOT NULL,
+    produto_codigo  INT                     NOT NULL,
 
-    item INT NOT NULL,
-    qtd INT NOT NULL,
-    preco DECIMAL(10,2) NOT NULL,
-    dimensoes VARCHAR(20),
+    item            INT                     NOT NULL,
+    qtd             INT                     NOT NULL,
+    preco           DECIMAL(10,2)           NOT NULL,
+    dimensoes       VARCHAR(20),
+    descricao       VARCHAR(200),
 
     PRIMARY KEY (venda_codigo, item),
 
@@ -157,9 +168,9 @@ CREATE TABLE vendas_tipo_produtos
     FOREIGN KEY (venda_codigo)
     REFERENCES Vendas(codigo),
 
-    CONSTRAINT fk_vtp_tipo_produto
-    FOREIGN KEY (tipo_produto_codigo)
-    REFERENCES Tipo_Produtos(codigo)
+    CONSTRAINT fk_vtp_produto
+    FOREIGN KEY (produto_codigo)
+    REFERENCES Produtos(codigo)
 )
 GO
 
@@ -170,12 +181,14 @@ GO
 
 CREATE TABLE compras_materiais
 (
-    compra_codigo INT NOT NULL,
-    material_codigo INT NOT NULL,
+    compra_codigo       INT                 NOT NULL,
+    material_codigo     INT                 NOT NULL,
 
-    item INT NOT NULL,
-    qtd INT NOT NULL,
-    preco DECIMAL(10,2) NOT NULL,
+    item                INT                 NOT NULL,
+    qtd                 INT                 NOT NULL,
+    preco               DECIMAL(10,2)       NOT NULL,
+    dimensoes           VARCHAR(20),
+    descricao           VARCHAR(200),
 
     PRIMARY KEY (compra_codigo, item),
 
@@ -189,6 +202,11 @@ CREATE TABLE compras_materiais
 )
 GO
 
+
+-- =========================================================
+-- INSERTS
+-- =========================================================
+
 INSERT INTO Situacao (descricao)
 VALUES 
 ('Pendente'),
@@ -201,12 +219,14 @@ VALUES
 (500.00, '1/3', '2026-04-05', '2026-04-05', 2, NULL, 2),
 (1500.00, '1/1', '2026-04-10', NULL, NULL, 1, 1);
 
-INSERT INTO vendas_produtos (venda_codigo, item, produto_codigo, qtd, preco, dimensoes)
-VALUES 
-(1, 1, 1, 1, 500.00, '100x60'),
-(2, 1, 3, 1, 1200.00, '200x90'),
-(3, 1, 2, 4, 150.00, '40x40');
-go
+INSERT INTO vendas_produtos
+(venda_codigo, produto_codigo, item, qtd, preco, dimensoes, descricao)
+VALUES
+(1, 1, 1, 1, 5000.00, '200x150x120', 'Guarda-roupa 6 portas em MDF'),
+(2, 3, 1, 1, 1200.00, '150x90x90', 'Balcão pia em MDF'),
+(3, 2, 1, 4, 1500.00, '200x200x80', 'Escrivaninha em madeira maciça');
+
+
 -- =========================================================================================
 -- VIEWS
 --==========================================================================================
@@ -232,12 +252,15 @@ from Fornecedores f, Pessoas p
 where f.pessoa_id = p.id
 go
 
+
+
 CREATE VIEW v_funcionarios
 as
 select u.pessoa_id, p.nome, u.usuario, u.senha, p.telefone, p.email, p.documento
-from Funcionarios u, pessoas p
-where u.pessoa_id = p.id
-go
+from Funcionarios u INNER JOIN Pessoas p
+ON u.pessoa_id = p.id
+GO
+
 
 CREATE VIEW v_produtos
 AS
@@ -245,21 +268,28 @@ SELECT codigo, nome_produto, valor_unitario
 FROM Produtos
 GO
 
+
 CREATE VIEW v_vendas
 AS
-SELECT v.codigo, v.data, v.total, pc.nome cliente, pf.nome funcionario
-FROM Vendas v, Pessoas pc, Pessoas pf 
-where pc.id = v.cliente_id and
-      pf.id = v.funcionario_id
+SELECT v.codigo, v.data, v.total,
+       pc.nome AS cliente,
+       pf.nome AS funcionario
+FROM Vendas v INNER JOIN Pessoas pc
+ON pc.id = v.cliente_id INNER JOIN Pessoas pf
+ON pf.id = v.funcionario_id
 GO
+
 
 CREATE VIEW v_compras
 AS
-SELECT c.codigo, c.data, c.total, pf.nome fornecedor, pu.nome funcionario
-FROM Compras c, Pessoas pf, Pessoas pu
-where pf.id = c.fornecedor_id and
-      pu.id = c.funcionario_id
+SELECT c.codigo, c.data, c.total,
+       pf.nome AS fornecedor,
+       pu.nome AS funcionario
+FROM Compras c INNER JOIN Pessoas pf
+ON pf.id = c.fornecedor_id INNER JOIN Pessoas pu
+ON pu.id = c.funcionario_id
 GO
+
 
 CREATE VIEW v_situacao
 AS
@@ -267,11 +297,15 @@ SELECT codigo, descricao
 FROM Situacao
 GO
 
+
+
 CREATE VIEW v_lancamentos
 AS
 SELECT codigo, valor, data_vencimento, data_pagamento
 FROM Lancamentos
 GO
+
+
 
 CREATE VIEW v_vendas_produtos
 AS
@@ -365,7 +399,7 @@ WHERE l.data_pagamento IS NOT NULL
 GO
 
 --===========================================================================================
--- FUN��ES ESCALARES
+-- FUNCOES ESCALARES
 --===========================================================================================
 CREATE FUNCTION getValorParcela
 (
@@ -394,11 +428,15 @@ CREATE FUNCTION getTotalVenda
 RETURNS DECIMAL(10,2)
 AS
 BEGIN
-    RETURN (
-        SELECT SUM(qtd * preco)
-        FROM vendas_produtos
-        WHERE venda_codigo = @venda
-    )
+
+    DECLARE @total DECIMAL(10,2)
+
+    SELECT @total = ISNULL(SUM(qtd * preco), 0)
+    FROM vendas_produtos
+    WHERE venda_codigo = @venda
+
+    RETURN @total
+
 END
 GO
 
@@ -412,19 +450,23 @@ CREATE FUNCTION getTotalPagoVenda
 RETURNS DECIMAL(10,2)
 AS
 BEGIN
-    RETURN (
-        SELECT SUM(valor)
-        FROM Lancamentos
-        WHERE venda_codigo = @venda
-          AND data_pagamento IS NOT NULL
-    )
+
+    DECLARE @total DECIMAL(10,2)
+
+    SELECT @total = ISNULL(SUM(valor), 0)
+    FROM Lancamentos
+    WHERE venda_codigo = @venda
+      AND data_pagamento IS NOT NULL
+
+    RETURN @total
+
 END
 GO
 
 SELECT dbo.getTotalPagoVenda(1) Pago
 go
 --=========================================================================================================================
--- FUN��ES TABLE - TIPO 1
+-- FUNCOES TABLE - TIPO 1
 --=========================================================================================================================
 CREATE FUNCTION getVendasFunc (@funcionario INT)
 RETURNS TABLE
@@ -481,6 +523,8 @@ GO
 SELECT * FROM getLancVenda(1)
 SELECT SUM(valor) Total FROM getLancVenda(1)
 go
+
+
 --==========================================================================================
 -- PROCEDURES
 --==========================================================================================
@@ -502,83 +546,75 @@ CREATE PROCEDURE sp_insert_pessoas
 )
 AS
 BEGIN
-	BEGIN TRY
-		BEGIN TRAN
-			if not exists (select * from Pessoas where documento = @documento and email = @email and telefone = @telefone)
-				INSERT INTO Pessoas
-				VALUES
-				(@nome, @nome_social, @tipo_pessoa, @documento, @tipo_endereco,
-				@logradouro, @numero, @bairro, @cidade, @cep, @telefone, @email)
-		COMMIT
-		 RETURN 0
-	END TRY
-	BEGIN CATCH
-		ROLLBACK
-		if exists (select * from Pessoas where documento = @documento)
-			PRINT 'Documento j� cadastrado'
-		if exists (select * from Pessoas where email = @email)
-			PRINT 'Email j� cadastrado'
-		if exists (select * from Pessoas where telefone = @telefone)
-			PRINT 'Telefone j� cadastrado'
-		RETURN 1
-	END CATCH
+
+    BEGIN TRY
+
+        IF EXISTS (SELECT 1 FROM Pessoas WHERE documento = @documento)
+        BEGIN
+            PRINT 'Documento já cadastrado'
+            RETURN 1
+        END
+
+        IF EXISTS (SELECT 1 FROM Pessoas WHERE email = @email)
+        BEGIN
+            PRINT 'Email já cadastrado'
+            RETURN 1
+        END
+
+        IF EXISTS (SELECT 1 FROM Pessoas WHERE telefone = @telefone)
+        BEGIN
+            PRINT 'Telefone já cadastrado'
+            RETURN 1
+        END
+
+        BEGIN TRAN
+
+        INSERT INTO Pessoas
+        (
+            nome,
+            nome_social,
+            tipo_pessoa,
+            documento,
+            email,
+            telefone,
+            tipo_endereco,
+            logradouro,
+            numero,
+            bairro,
+            cidade,
+            cep
+        )
+        VALUES
+        (
+            @nome,
+            @nome_social,
+            @tipo_pessoa,
+            @documento,
+            @email,
+            @telefone,
+            @tipo_endereco,
+            @logradouro,
+            @numero,
+            @bairro,
+            @cidade,
+            @cep
+        )
+
+        COMMIT
+        RETURN 0
+
+    END TRY
+
+    BEGIN CATCH
+
+        ROLLBACK
+        PRINT 'Erro ao inserir pessoa'
+        RETURN 1
+
+    END CATCH
+
 END
 GO
-
-CREATE PROCEDURE sp_update_pessoas
-(
-    @id INT,
-    @nome VARCHAR(100),
-    @nome_social VARCHAR(100),
-    @tipo_pessoa CHAR(1),
-    @documento VARCHAR(50),
-    @tipo_endereco VARCHAR(50),
-    @logradouro VARCHAR(100),
-    @numero VARCHAR(10),
-    @bairro VARCHAR(50),
-    @cidade VARCHAR(50),
-    @cep VARCHAR(20),
-    @telefone VARCHAR(20),
-    @email VARCHAR(100)
-)
-AS
-BEGIN
-	BEGIN TRY
-		BEGIN TRAN
-			if not exists (select * from Pessoas where documento = @documento and email = @email and telefone = @telefone)
-				UPDATE Pessoas SET
-					nome = @nome,
-					nome_social = @nome_social,
-					tipo_pessoa = @tipo_pessoa,
-					documento = @documento,
-					tipo_endereco = @tipo_endereco,
-					logradouro = @logradouro,
-					numero = @numero,
-					bairro = @bairro,
-					cidade = @cidade,
-					cep = @cep,
-					telefone = @telefone,
-					email = @email
-		WHERE id = @id
-		COMMIT
-		RETURN 0
-	END TRY
-	BEGIN CATCH
-		ROLLBACK
-		if exists (select * from Pessoas where documento = @documento)
-			PRINT 'Documento j� cadastrado'
-		if exists (select * from Pessoas where email = @email)
-			PRINT 'Email j� cadastrado'
-		if exists (select * from Pessoas where telefone = @telefone)
-			PRINT 'Telefone j� cadastrado'	
-		RETURN 1
-	END CATCH
-END
-GO
-
-
-
-
 
 
 
@@ -600,6 +636,7 @@ BEGIN
 	END CATCH
 END
 GO
+
 
 CREATE PROCEDURE sp_update_clientes
 (@pessoa_id INT, @novo_id INT)
@@ -952,16 +989,6 @@ GO
 
 
 
-
-
-
-
-
-
-
-
-
-
 CREATE PROCEDURE sp_insert_compras
 (
     @data DATE,
@@ -1016,6 +1043,7 @@ BEGIN
     END CATCH
 END
 GO
+
 
 CREATE PROCEDURE sp_update_compras
 (
@@ -1075,14 +1103,6 @@ GO
 
 
 
-
-
-
-
-
-
-
-
 CREATE PROCEDURE sp_insert_situacao
 (@descricao VARCHAR(30))
 AS
@@ -1116,6 +1136,7 @@ BEGIN
     END CATCH
 END
 GO
+
 
 CREATE PROCEDURE sp_update_situacao
 (
@@ -1162,17 +1183,6 @@ BEGIN
     END CATCH
 END
 GO
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -1319,66 +1329,72 @@ GO
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 CREATE PROCEDURE sp_insert_vendas_produtos
 (
     @venda INT,
     @item INT,
     @produto INT,
     @qtd INT,
+    @descricao VARCHAR(200),
     @preco DECIMAL(10,2),
     @dimensoes VARCHAR(20)
 )
 AS
 BEGIN
+
     BEGIN TRY
 
         IF NOT EXISTS (SELECT 1 FROM Vendas WHERE codigo = @venda)
         BEGIN
-            PRINT 'Venda n�o existe'
+            PRINT 'Venda não existe'
             RETURN 1
         END
 
         IF NOT EXISTS (SELECT 1 FROM Produtos WHERE codigo = @produto)
         BEGIN
-            PRINT 'Produto n�o existe'
-            RETURN 1
-        END
-
-        IF @qtd <= 0
-        BEGIN
-            PRINT 'Quantidade inv�lida'
+            PRINT 'Produto não existe'
             RETURN 1
         END
 
         BEGIN TRAN
 
         INSERT INTO vendas_produtos
-        VALUES (@venda, @item, @produto, @qtd, @preco, @dimensoes)
+        (
+            venda_codigo,
+            produto_codigo,
+            item,
+            qtd,
+            preco,
+            dimensoes,
+            descricao
+        )
+        VALUES
+        (
+            @venda,
+            @produto,
+            @item,
+            @qtd,
+            @preco,
+            @dimensoes,
+            @descricao
+        )
 
         COMMIT
         RETURN 0
 
     END TRY
+
     BEGIN CATCH
+
         ROLLBACK
         PRINT 'Erro ao inserir item da venda'
         RETURN 1
+
     END CATCH
+
 END
 GO
+
 
 CREATE PROCEDURE sp_update_vendas_produtos
 (
@@ -1386,6 +1402,7 @@ CREATE PROCEDURE sp_update_vendas_produtos
     @item INT,
     @produto INT,
     @qtd INT,
+    @descricao VARCHAR(200),
     @preco DECIMAL(10,2),
     @dimensoes VARCHAR(20)
 )
@@ -1431,6 +1448,7 @@ BEGIN
         UPDATE vendas_produtos SET
             produto_codigo = @produto,
             qtd = @qtd,
+            descricao = @descricao,
             preco = @preco,
             dimensoes = @dimensoes
         WHERE venda_codigo = @venda
