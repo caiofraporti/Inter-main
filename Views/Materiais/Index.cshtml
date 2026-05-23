@@ -42,8 +42,6 @@
                     <tr>
                         <td class="text-muted">@m.Codigo</td>
                         <td>@m.NomeMaterial</td>
-                        <td class="text-muted">@(m.Descricao ?? "—")</td>
-                        <td>R$ @m.Preco.ToString("N2")</td>
                         <td>
                             <div class="d-flex gap-2">
                                 <a asp-action="Edit" asp-route-id="@m.Codigo"

@@ -22,7 +22,6 @@ namespace MoveisCarrara.Data
         public DbSet<Material>         Materiais         { get; set; }
         public DbSet<Venda>            Vendas            { get; set; }
         public DbSet<Compra>           Compras           { get; set; }
-        public DbSet<VendaTipoProduto> VendaTipoProdutos { get; set; }
         public DbSet<VendaProduto>     VendaProdutos    { get; set; }
         public DbSet<CompraMaterial>   CompraMateriais  { get; set; }
 
@@ -81,7 +80,7 @@ namespace MoveisCarrara.Data
             });
 
             modelBuilder.Entity<VendaProduto>(entity =>
-{
+            {
                 entity.ToTable("vendas_produtos");
                 entity.HasKey(v => new { v.VendaCodigo, v.Item });
                 entity.Property(v => v.VendaCodigo).HasColumnName("venda_codigo");
