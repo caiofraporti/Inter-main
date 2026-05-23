@@ -3,6 +3,10 @@
 @{
     ViewData["Title"]         = "Alterar Compra";
     ViewData["SidebarTitulo"] = "Compras";
+    var materiais    = (List<Material>)ViewBag.Materiais;
+    var fornecedores = (List<Fornecedor>)ViewBag.Fornecedores;
+    var funcs        = (List<Funcionario>)ViewBag.Funcionarios;
+    var itens        = ViewBag.Itens as List<CompraMaterial> ?? new List<CompraMaterial>();
 }
 
 @section SidebarMenu {
@@ -19,7 +23,7 @@
     </div>
 }
 
-<div class="card shadow-sm" style="max-width:760px">
+<div class="card shadow-sm" style="max-width:1000px">
     <div class="card-body p-4">
         <h2 class="fw-normal mb-4">Alterar Compra</h2>
 
@@ -37,12 +41,14 @@
                     <span asp-validation-for="Data" class="text-danger small"></span>
                 </div>
                 <div class="col-md-4">
-                    <label asp-for="Total" class="form-label">Total (R$)</label>
-                    <input asp-for="Total" class="form-control" type="number" step="0.01">
-                </div>
-                <div class="col-md-4">
                     <label asp-for="NrParcelas" class="form-label">Nº de Parcelas</label>
                     <input asp-for="NrParcelas" class="form-control" type="number" min="1">
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label">Total (calculado)</label>
+                    <input type="text" id="totalDisplay" class="form-control" readonly
+                           value="R$ @(Model.Total.HasValue ? Model.Total.Value.ToString("N2") : "0,00")"
+                           style="background:#f8f9fa">
                 </div>
             </div>
 
@@ -52,12 +58,16 @@
                     <label asp-for="FornecedorId" class="form-label">Fornecedor *</label>
                     <select asp-for="FornecedorId" class="form-select">
                         <option value="">Selecione...</option>
-                        @foreach (var f in (List<Fornecedor>)ViewBag.Fornecedores)
+                        @foreach (var f in fornecedores)
                         {
-                            <option value="@f.PessoaId"
-                                    selected="@(f.PessoaId == Model.FornecedorId ? "selected" : null)">
-                                @f.Pessoa?.Nome
-                            </option>
+                            if (f.PessoaId == Model.FornecedorId)
+                            {
+                                <option value="@f.PessoaId" selected="selected">@f.Pessoa?.Nome</option>
+                            }
+                            else
+                            {
+                                <option value="@f.PessoaId">@f.Pessoa?.Nome</option>
+                            }
                         }
                     </select>
                     <span asp-validation-for="FornecedorId" class="text-danger small"></span>
@@ -66,17 +76,94 @@
                     <label asp-for="FuncionarioId" class="form-label">Funcionário *</label>
                     <select asp-for="FuncionarioId" class="form-select">
                         <option value="">Selecione...</option>
-                        @foreach (var f in (List<Funcionario>)ViewBag.Funcionarios)
+                        @foreach (var f in funcs)
                         {
-                            <option value="@f.PessoaId"
-                                    selected="@(f.PessoaId == Model.FuncionarioId ? "selected" : null)">
-                                @f.Pessoa?.Nome
-                            </option>
+                            if (f.PessoaId == Model.FuncionarioId)
+                            {
+                                <option value="@f.PessoaId" selected="selected">@f.Pessoa?.Nome</option>
+                            }
+                            else
+                            {
+                                <option value="@f.PessoaId">@f.Pessoa?.Nome</option>
+                            }
                         }
                     </select>
                     <span asp-validation-for="FuncionarioId" class="text-danger small"></span>
                 </div>
             </div>
+
+            <h5 class="text-muted border-bottom pb-2 mb-3 mt-2">Itens da compra</h5>
+            <div class="table-responsive mb-2">
+                <table class="table table-bordered align-middle" id="tabelaItens">
+                    <thead class="table-light">
+                        <tr>
+                            <th style="min-width:180px">Material</th>
+                            <th style="width:70px">Qtd</th>
+                            <th style="width:120px">Preço Unit. (R$)</th>
+                            <th style="width:110px">Dimensões</th>
+                            <th style="min-width:160px">Descrição</th>
+                            <th style="width:110px">Subtotal</th>
+                            <th style="width:50px"></th>
+                        </tr>
+                    </thead>
+                    <tbody id="itensBody">
+                        @if (itens.Any())
+                        {
+                            @foreach (var item in itens)
+                            {
+                                <tr class="item-row">
+                                    <td>
+                                        <select name="itemMaterialId" class="form-select form-select-sm material-select">
+                                            <option value="0">Selecione...</option>
+                                            @foreach (var m in materiais)
+                                            {
+                                                if (m.Codigo == item.MaterialCodigo)
+                                                {
+                                                    <option value="@m.Codigo" selected="selected">@m.NomeMaterial</option>
+                                                }
+                                                else
+                                                {
+                                                    <option value="@m.Codigo">@m.NomeMaterial</option>
+                                                }
+                                            }
+                                        </select>
+                                    </td>
+                                    <td><input type="number" name="itemQtd" class="form-control form-control-sm item-qtd" value="@item.Qtd" min="1"></td>
+                                    <td><input type="number" name="itemPreco" class="form-control form-control-sm item-preco" step="0.01" value="@item.Preco.ToString("F2", System.Globalization.CultureInfo.InvariantCulture)"></td>
+                                    <td><input type="text" name="itemDimensoes" class="form-control form-control-sm" value="@item.Dimensoes" placeholder="ex: 120x60"></td>
+                                    <td><input type="text" name="itemDescricao" class="form-control form-control-sm" value="@item.Descricao" placeholder="Descrição do item"></td>
+                                    <td><span class="item-subtotal text-muted">R$ @((item.Qtd * item.Preco).ToString("N2"))</span></td>
+                                    <td><button type="button" class="btn btn-sm btn-outline-danger btn-remover-item"><i class="bi bi-trash"></i></button></td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr class="item-row">
+                                <td>
+                                    <select name="itemMaterialId" class="form-select form-select-sm material-select">
+                                        <option value="0">Selecione...</option>
+                                        @foreach (var m in materiais)
+                                        {
+                                            <option value="@m.Codigo">@m.NomeMaterial</option>
+                                        }
+                                    </select>
+                                </td>
+                                <td><input type="number" name="itemQtd" class="form-control form-control-sm item-qtd" value="1" min="1"></td>
+                                <td><input type="number" name="itemPreco" class="form-control form-control-sm item-preco" step="0.01" value="0" placeholder="0,00"></td>
+                                <td><input type="text" name="itemDimensoes" class="form-control form-control-sm" placeholder="ex: 120x60"></td>
+                                <td><input type="text" name="itemDescricao" class="form-control form-control-sm" placeholder="Descrição do item"></td>
+                                <td><span class="item-subtotal text-muted">R$ 0,00</span></td>
+                                <td><button type="button" class="btn btn-sm btn-outline-danger btn-remover-item"><i class="bi bi-trash"></i></button></td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+            <button type="button" class="btn btn-outline-secondary btn-sm mb-4" id="btnAddItem">
+                <i class="bi bi-plus-circle me-1"></i>Adicionar item
+            </button>
 
             <div class="d-flex gap-2">
                 <button type="submit" class="btn btn-carrara px-4">
@@ -87,3 +174,62 @@
         </form>
     </div>
 </div>
+
+@section Scripts {
+<script>
+var materiaisOptions = `@foreach (var m in materiais) {
+    <text><option value="@m.Codigo">@m.NomeMaterial</option></text>
+}`;
+
+function calcularLinha(row) {
+    var qtd   = parseFloat(row.querySelector('.item-qtd').value)   || 0;
+    var preco = parseFloat(row.querySelector('.item-preco').value) || 0;
+    row.querySelector('.item-subtotal').textContent = 'R$ ' + (qtd * preco).toFixed(2).replace('.', ',');
+    calcularTotal();
+}
+
+function calcularTotal() {
+    var total = 0;
+    document.querySelectorAll('.item-subtotal').forEach(function(el) {
+        total += parseFloat(el.textContent.replace('R$ ', '').replace(',', '.')) || 0;
+    });
+    document.getElementById('totalDisplay').value = 'R$ ' + total.toFixed(2).replace('.', ',');
+}
+
+function bindLinha(row) {
+    row.querySelector('.item-qtd').addEventListener('input',   function() { calcularLinha(row); });
+    row.querySelector('.item-preco').addEventListener('input', function() { calcularLinha(row); });
+    row.querySelector('.btn-remover-item').addEventListener('click', function() {
+        if (document.querySelectorAll('.item-row').length > 1) {
+            row.remove();
+            calcularTotal();
+        }
+    });
+}
+
+document.querySelectorAll('.item-row').forEach(bindLinha);
+calcularTotal();
+
+document.getElementById('btnAddItem').addEventListener('click', function() {
+    var tbody = document.getElementById('itensBody');
+    var newRow = document.createElement('tr');
+    newRow.className = 'item-row';
+    newRow.innerHTML = `
+        <td>
+            <select name="itemMaterialId" class="form-select form-select-sm material-select">
+                <option value="0">Selecione...</option>
+                ${materiaisOptions}
+            </select>
+        </td>
+        <td><input type="number" name="itemQtd" class="form-control form-control-sm item-qtd" value="1" min="1"></td>
+        <td><input type="number" name="itemPreco" class="form-control form-control-sm item-preco" step="0.01" value="0" placeholder="0,00"></td>
+        <td><input type="text" name="itemDimensoes" class="form-control form-control-sm" placeholder="ex: 120x60"></td>
+        <td><input type="text" name="itemDescricao" class="form-control form-control-sm" placeholder="Descrição do item"></td>
+        <td><span class="item-subtotal text-muted">R$ 0,00</span></td>
+        <td><button type="button" class="btn btn-sm btn-outline-danger btn-remover-item"><i class="bi bi-trash"></i></button></td>
+    `;
+    tbody.appendChild(newRow);
+    bindLinha(newRow);
+});
+</script>
+}

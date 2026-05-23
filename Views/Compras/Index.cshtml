@@ -50,6 +50,10 @@
                         <td>@(c.Total.HasValue ? "R$ " + c.Total.Value.ToString("N2") : "—")</td>
                         <td>
                             <div class="d-flex gap-2">
+                                <a asp-action="Details" asp-route-id="@c.Codigo"
+                                   class="btn btn-sm btn-outline-secondary">
+                                    <i class="bi bi-eye"></i>
+                                </a>
                                 <a asp-action="Edit" asp-route-id="@c.Codigo"
                                    class="btn btn-sm" style="background:#7fd4c1">Alterar</a>
                                 <form asp-action="Delete" asp-route-id="@c.Codigo"

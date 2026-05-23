@@ -18,6 +18,12 @@ namespace MoveisCarrara.Models
         [Column(TypeName = "decimal(10,2)")]
         public decimal Preco { get; set; }
 
+        [StringLength(20)]
+        public string? Dimensoes { get; set; }
+
+        [StringLength(200)]
+        public string? Descricao { get; set; }
+
         // Navegação
         [ForeignKey("CompraCodigo")]
         public Compra? Compra { get; set; }
