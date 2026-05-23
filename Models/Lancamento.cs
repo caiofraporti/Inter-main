@@ -1,6 +1,5 @@
 // ============================================================
 // Models/Lancamento.cs
-// Tabela "Lancamentos" — contas a pagar e receber
 // ============================================================
 
 using System.ComponentModel.DataAnnotations;
@@ -14,7 +13,6 @@ namespace MoveisCarrara.Models
         [Key]
         public int Codigo { get; set; }
 
-        // decimal(10,2) = valor monetário com 2 casas decimais
         [Column(TypeName = "decimal(10,2)")]
         public decimal? Valor { get; set; }
 
@@ -30,7 +28,6 @@ namespace MoveisCarrara.Models
         [DataType(DataType.Date)]
         public DateTime? DataPagamento { get; set; }
 
-        // Chaves estrangeiras — podem ser nulas (nullable int?)
         [Column("venda_codigo")]
         public int? VendaCodigo { get; set; }
 
@@ -40,8 +37,14 @@ namespace MoveisCarrara.Models
         [Column("situacao_codigo")]
         public int? SituacaoCodigo { get; set; }
 
-        // Propriedade de navegação para acessar a situação
+        // Navegação
         [ForeignKey("SituacaoCodigo")]
         public Situacao? Situacao { get; set; }
+
+        [ForeignKey("VendaCodigo")]
+        public Venda? Venda { get; set; }
+
+        [ForeignKey("CompraCodigo")]
+        public Compra? Compra { get; set; }
     }
 }

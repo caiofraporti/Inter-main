@@ -7,13 +7,12 @@
 }
 
 @section SidebarMenu {
-    <a asp-action="Create" class="nav-link"><i class="bi bi-plus-circle me-2"></i>Cadastrar</a>
-    <a asp-action="Index"  class="nav-link active"><i class="bi bi-list-ul me-2"></i>Listar</a>
+    <a asp-action="Index" class="nav-link active"><i class="bi bi-list-ul me-2"></i>Listar</a>
 }
 
 @section HeaderNav {
     <div class="d-flex gap-4">
-        <a asp-controller="Clientes"    asp-action="Index" class="text-decoration-none" style="color:#8b6f47">Clientes</a>
+        <a asp-controller="Clientes"     asp-action="Index" class="text-decoration-none" style="color:#8b6f47">Clientes</a>
         <a asp-controller="Fornecedores" asp-action="Index" class="text-decoration-none" style="color:#8b6f47">Fornecedores</a>
     </div>
 }
@@ -21,13 +20,17 @@
 <div class="d-flex justify-content-between align-items-start mb-4 flex-wrap gap-3">
     <div>
         <h2 class="fw-normal mb-3">Todas as contas</h2>
-        @* Botões de filtro — cada um passa um parâmetro diferente na URL *@
         <div class="d-flex flex-wrap gap-2">
-            <a asp-action="Index" class="btn btn-sm @(filtro=="todas"  ? "btn-carrara" : "btn-outline-secondary")">Todas</a>
-            <a asp-action="Index" asp-route-filtro="pagar"    class="btn btn-sm @(filtro=="pagar"    ? "btn-carrara" : "btn-outline-secondary")">A Pagar</a>
-            <a asp-action="Index" asp-route-filtro="receber"  class="btn btn-sm @(filtro=="receber"  ? "btn-carrara" : "btn-outline-secondary")">A Receber</a>
-            <a asp-action="Index" asp-route-filtro="pendentes" class="btn btn-sm @(filtro=="pendentes"? "btn-carrara" : "btn-outline-secondary")">Pendentes</a>
-            <a asp-action="Index" asp-route-filtro="pagas"    class="btn btn-sm @(filtro=="pagas"    ? "btn-carrara" : "btn-outline-secondary")">Pagas</a>
+            <a asp-action="Index"
+               class="btn btn-sm @(filtro=="todas"     ? "btn-carrara" : "btn-outline-secondary")">Todas</a>
+            <a asp-action="Index" asp-route-filtro="pagar"
+               class="btn btn-sm @(filtro=="pagar"     ? "btn-carrara" : "btn-outline-secondary")">A Pagar</a>
+            <a asp-action="Index" asp-route-filtro="receber"
+               class="btn btn-sm @(filtro=="receber"   ? "btn-carrara" : "btn-outline-secondary")">A Receber</a>
+            <a asp-action="Index" asp-route-filtro="pendentes"
+               class="btn btn-sm @(filtro=="pendentes" ? "btn-carrara" : "btn-outline-secondary")">Pendentes</a>
+            <a asp-action="Index" asp-route-filtro="pagas"
+               class="btn btn-sm @(filtro=="pagas"     ? "btn-carrara" : "btn-outline-secondary")">Pagas</a>
         </div>
     </div>
     <input type="text" id="busca" class="form-control" style="width:220px"
@@ -41,6 +44,8 @@
                 <tr>
                     <th>#</th>
                     <th>Parcela</th>
+                    <th>Cliente / Fornecedor</th>
+                    <th>Tipo</th>
                     <th>Valor</th>
                     <th>Vencimento</th>
                     <th>Pagamento</th>
@@ -51,16 +56,43 @@
             <tbody>
                 @foreach (var l in Model)
                 {
-                    @* Define a classe CSS do badge conforme a situação *@
                     string badgeClass = l.Situacao?.Descricao switch {
                         "Pago"     => "badge-pago",
                         "Atrasado" => "badge-atrasado",
                         _          => "badge-pendente"
                     };
 
-                    <tr>
-                        <td>@l.Codigo</td>
-                        <td>@l.ParcelaNr</td>
+                    // Define o nome e o link de acordo com venda ou compra
+                    string nomeEntidade = "—";
+                    string linkDetalhes = "#";
+                    string tipoLabel    = "";
+                    string tipoCor      = "";
+
+                    if (l.VendaCodigo != null)
+                    {
+                        nomeEntidade = l.Venda?.Cliente?.Pessoa?.Nome ?? "—";
+                        linkDetalhes = Url.Action("Details", "Vendas",  new { id = l.VendaCodigo  }) ?? "#";
+                        tipoLabel    = "A Receber";
+                        tipoCor      = "background:#d4edda;color:#155724";
+                    }
+                    else if (l.CompraCodigo != null)
+                    {
+                        nomeEntidade = l.Compra?.Fornecedor?.Pessoa?.Nome ?? "—";
+                        linkDetalhes = Url.Action("Details", "Compras", new { id = l.CompraCodigo }) ?? "#";
+                        tipoLabel    = "A Pagar";
+                        tipoCor      = "background:#f8d7da;color:#721c24";
+                    }
+
+                    <tr style="cursor:pointer" onclick="window.location='@linkDetalhes'">
+                        <td class="text-muted">@l.Codigo</td>
+                        <td>@(l.ParcelaNr ?? "—")</td>
+                        <td class="fw-semibold">@nomeEntidade</td>
+                        <td>
+                            @if (!string.IsNullOrEmpty(tipoLabel))
+                            {
+                                <span class="badge px-2 py-1 rounded-pill" style="@tipoCor">@tipoLabel</span>
+                            }
+                        </td>
                         <td>R$ @l.Valor?.ToString("N2")</td>
                         <td>@l.DataVencimento?.ToString("dd/MM/yyyy")</td>
                         <td>@(l.DataPagamento?.ToString("dd/MM/yyyy") ?? "—")</td>
@@ -69,7 +101,7 @@
                                 @(l.Situacao?.Descricao ?? "—")
                             </span>
                         </td>
-                        <td>
+                        <td onclick="event.stopPropagation()">
                             <div class="d-flex gap-2">
                                 <a asp-action="Edit" asp-route-id="@l.Codigo"
                                    class="btn btn-sm" style="background:#7fd4c1">Alterar</a>
@@ -85,7 +117,7 @@
                 }
                 @if (!Model.Any())
                 {
-                    <tr><td colspan="7" class="text-center text-muted py-4">Nenhuma conta encontrada</td></tr>
+                    <tr><td colspan="9" class="text-center text-muted py-4">Nenhuma conta encontrada</td></tr>
                 }
             </tbody>
         </table>
