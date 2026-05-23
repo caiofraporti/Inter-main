@@ -76,7 +76,7 @@ namespace MoveisCarrara.Controllers
                 {
                     if (itemProdutoId[i] == 0) continue;
 
-                    var item = new VendaProduto   // ← era VendaTipoProduto
+                    var item = new VendaProduto   // ← era VendaProduto
                     {
                         VendaCodigo   = venda.Codigo,
                         ProdutoCodigo = itemProdutoId[i],
@@ -85,7 +85,7 @@ namespace MoveisCarrara.Controllers
                         Preco         = itemPreco[i],
                         Dimensoes     = itemDimensoes.Count > i ? itemDimensoes[i] : null
                     };
-                    _context.VendaProdutos.Add(item);   // ← era VendaTipoProdutos
+                    _context.VendaProdutos.Add(item);   // ← era VendaProdutos
                 }
 
                 await _context.SaveChangesAsync();
@@ -109,7 +109,7 @@ namespace MoveisCarrara.Controllers
 
             if (venda == null) return NotFound();
 
-            var itens = await _context.VendaProdutos   // ← era VendaTipoProdutos
+            var itens = await _context.VendaProdutos   // ← era VendaProdutos
                 .Where(i => i.VendaCodigo == id)
                 .OrderBy(i => i.Item)
                 .ToListAsync();
@@ -146,7 +146,7 @@ namespace MoveisCarrara.Controllers
 
                 _context.Vendas.Update(venda);
 
-                var itensAntigos = _context.VendaProdutos   // ← era VendaTipoProdutos
+                var itensAntigos = _context.VendaProdutos   // ← era VendaProdutos
                     .Where(i => i.VendaCodigo == id);
                 _context.VendaProdutos.RemoveRange(itensAntigos);
                 await _context.SaveChangesAsync();
@@ -155,7 +155,7 @@ namespace MoveisCarrara.Controllers
                 {
                     if (itemProdutoId[i] == 0) continue;
 
-                    var item = new VendaProduto   // ← era VendaTipoProduto
+                    var item = new VendaProduto   // ← era VendaProduto
                     {
                         VendaCodigo   = id,
                         ProdutoCodigo = itemProdutoId[i],
@@ -164,7 +164,7 @@ namespace MoveisCarrara.Controllers
                         Preco         = itemPreco[i],
                         Dimensoes     = itemDimensoes.Count > i ? itemDimensoes[i] : null
                     };
-                    _context.VendaProdutos.Add(item);   // ← era VendaTipoProdutos
+                    _context.VendaProdutos.Add(item);   // ← era VendaProdutos
                 }
 
                 await _context.SaveChangesAsync();
@@ -172,7 +172,7 @@ namespace MoveisCarrara.Controllers
                 return RedirectToAction("Index");
             }
 
-            var itensExistentes = await _context.VendaProdutos   // ← era VendaTipoProdutos
+            var itensExistentes = await _context.VendaProdutos   // ← era VendaProdutos
                 .Where(i => i.VendaCodigo == id)
                 .OrderBy(i => i.Item)
                 .ToListAsync();
@@ -189,7 +189,7 @@ namespace MoveisCarrara.Controllers
         {
             if (!VerificarLogin()) return RedirectToAction("Login", "Home");
 
-            var itens = _context.VendaProdutos   // ← era VendaTipoProdutos
+            var itens = _context.VendaProdutos   // ← era VendaProdutos
                 .Where(i => i.VendaCodigo == id);
             _context.VendaProdutos.RemoveRange(itens);
 

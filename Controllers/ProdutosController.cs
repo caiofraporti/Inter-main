@@ -1,6 +1,6 @@
 // ============================================================
-// Controllers/TipoProdutosController.cs
-// CRUD de Tipos de Produtos
+// Controllers/ProdutosController.cs
+// CRUD de Produtos
 // ============================================================
 
 using Microsoft.AspNetCore.Mvc;
@@ -22,7 +22,7 @@ namespace MoveisCarrara.Controllers
         private bool VerificarLogin() =>
             HttpContext.Session.GetString("UsuarioLogado") != null;
 
-        // GET /TipoProdutos
+        // GET /Produtos
         public async Task<IActionResult> Index()
         {
             if (!VerificarLogin()) return RedirectToAction("Login", "Home");
@@ -34,74 +34,74 @@ namespace MoveisCarrara.Controllers
             return View(lista);
         }
 
-        // GET /TipoProdutos/Create
+        // GET /Produtos/Create
         public IActionResult Create()
         {
             if (!VerificarLogin()) return RedirectToAction("Login", "Home");
             return View();
         }
 
-        // POST /TipoProdutos/Create
+        // POST /Produtos/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(Produto tipoProduto)
+        public async Task<IActionResult> Create(Produto Produto)
         {
             if (!VerificarLogin()) return RedirectToAction("Login", "Home");
 
             if (ModelState.IsValid)
             {
-                _context.Produtos.Add(tipoProduto);
+                _context.Produtos.Add(Produto);
                 await _context.SaveChangesAsync();
-                TempData["Sucesso"] = "Tipo de produto cadastrado com sucesso!";
+                TempData["Sucesso"] = "Produto cadastrado com sucesso!";
                 return RedirectToAction("Index");
             }
 
-            return View(tipoProduto);
+            return View(Produto);
         }
 
-        // GET /TipoProdutos/Edit/5
+        // GET /Produtos/Edit/5
         public async Task<IActionResult> Edit(int id)
         {
             if (!VerificarLogin()) return RedirectToAction("Login", "Home");
 
-            var tipoProduto = await _context.Produtos.FindAsync(id);
-            if (tipoProduto == null) return NotFound();
+            var Produto = await _context.Produtos.FindAsync(id);
+            if (Produto == null) return NotFound();
 
-            return View(tipoProduto);
+            return View(Produto);
         }
 
-        // POST /TipoProdutos/Edit/5
+        // POST /Produtos/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, Produto tipoProduto)
+        public async Task<IActionResult> Edit(int id, Produto Produto)
         {
             if (!VerificarLogin()) return RedirectToAction("Login", "Home");
 
             if (ModelState.IsValid)
             {
-                tipoProduto.Codigo = id;
-                _context.Produtos.Update(tipoProduto);
+                Produto.Codigo = id;
+                _context.Produtos.Update(Produto);
                 await _context.SaveChangesAsync();
-                TempData["Sucesso"] = "Tipo de produto alterado com sucesso!";
+                TempData["Sucesso"] = "Produto alterado com sucesso!";
                 return RedirectToAction("Index");
             }
 
-            return View(tipoProduto);
+            return View(Produto);
         }
 
-        // POST /TipoProdutos/Delete/5
+        // POST /Produtos/Delete/5
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Delete(int id)
         {
             if (!VerificarLogin()) return RedirectToAction("Login", "Home");
 
-            var tipoProduto = await _context.Produtos.FindAsync(id);
-            if (tipoProduto != null)
+            var Produto = await _context.Produtos.FindAsync(id);
+            if (Produto != null)
             {
-                _context.Produtos.Remove(tipoProduto);
+                _context.Produtos.Remove(Produto);
                 await _context.SaveChangesAsync();
-                TempData["Sucesso"] = "Tipo de produto excluído com sucesso!";
+                TempData["Sucesso"] = "Produto excluído com sucesso!";
             }
 
             return RedirectToAction("Index");

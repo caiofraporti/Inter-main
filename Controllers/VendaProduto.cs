@@ -1,6 +1,6 @@
 // ============================================================
-// Models/VendaTipoProduto.cs
-// Tabela "vendas_tipo_produtos" — itens de uma venda
+// Models/VendaProduto.cs
+// Tabela "vendas_produtos" — itens de uma venda
 // ============================================================
 
 using System.ComponentModel.DataAnnotations;
@@ -8,8 +8,8 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace MoveisCarrara.Models
 {
-    [Table("vendas_tipo_produtos")]
-    public class VendaTipoProduto
+    [Table("vendas_produtos")]
+    public class VendasProduto
     {
         [Column("venda_codigo")]
         public int VendaCodigo { get; set; }
@@ -36,7 +36,7 @@ namespace MoveisCarrara.Models
         [ForeignKey("VendaCodigo")]
         public Venda? Venda { get; set; }
 
-        [ForeignKey("TipoProdutoCodigo")]
+        [ForeignKey("ProdutoCodigo")]
         public Produto? Produto { get; set; }
     }
 }

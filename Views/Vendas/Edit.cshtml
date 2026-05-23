@@ -6,7 +6,7 @@
     var produtos  = (List<Produto>)ViewBag.Produtos;
     var clientes  = (List<Cliente>)ViewBag.Clientes;
     var funcs     = (List<Funcionario>)ViewBag.Funcionarios;
-    var itens     = ViewBag.Itens as List<VendaTipoProduto> ?? new List<VendaTipoProduto>();
+    var itens     = ViewBag.Itens as List<VendaProduto> ?? new List<VendaProduto>();
 }
 
 @section SidebarMenu {

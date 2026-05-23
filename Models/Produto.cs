@@ -1,6 +1,6 @@
 // ============================================================
-// Models/TipoProduto.cs
-// Tabela "Tipo_Produtos"
+// Models/Produto.cs
+// Tabela "Produtos"
 // ============================================================
 
 using System.ComponentModel.DataAnnotations;
