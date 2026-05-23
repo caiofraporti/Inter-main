@@ -6,6 +6,10 @@
 using Microsoft.EntityFrameworkCore;
 using MoveisCarrara.Data;
 
+var cultureInfo = new System.Globalization.CultureInfo("en-US");
+System.Globalization.CultureInfo.DefaultThreadCurrentCulture = cultureInfo;
+System.Globalization.CultureInfo.DefaultThreadCurrentUICulture = cultureInfo;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // -----------------------------------------------------------
