@@ -8,8 +8,8 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace MoveisCarrara.Models
 {
-    [Table("Tipo_Produtos")]
-    public class TipoProduto
+    [Table("Produtos")]
+    public class Produto
     {
         [Key]
         public int Codigo { get; set; }

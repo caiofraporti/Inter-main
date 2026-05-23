@@ -10,11 +10,11 @@ using MoveisCarrara.Models;
 
 namespace MoveisCarrara.Controllers
 {
-    public class TipoProdutosController : Controller
+    public class ProdutosController : Controller
     {
         private readonly AppDbContext _context;
 
-        public TipoProdutosController(AppDbContext context)
+        public ProdutosController(AppDbContext context)
         {
             _context = context;
         }
@@ -27,7 +27,7 @@ namespace MoveisCarrara.Controllers
         {
             if (!VerificarLogin()) return RedirectToAction("Login", "Home");
 
-            var lista = await _context.TipoProdutos
+            var lista = await _context.Produtos
                 .OrderBy(t => t.NomeProduto)
                 .ToListAsync();
 
@@ -44,13 +44,13 @@ namespace MoveisCarrara.Controllers
         // POST /TipoProdutos/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(TipoProduto tipoProduto)
+        public async Task<IActionResult> Create(Produto tipoProduto)
         {
             if (!VerificarLogin()) return RedirectToAction("Login", "Home");
 
             if (ModelState.IsValid)
             {
-                _context.TipoProdutos.Add(tipoProduto);
+                _context.Produtos.Add(tipoProduto);
                 await _context.SaveChangesAsync();
                 TempData["Sucesso"] = "Tipo de produto cadastrado com sucesso!";
                 return RedirectToAction("Index");
@@ -64,7 +64,7 @@ namespace MoveisCarrara.Controllers
         {
             if (!VerificarLogin()) return RedirectToAction("Login", "Home");
 
-            var tipoProduto = await _context.TipoProdutos.FindAsync(id);
+            var tipoProduto = await _context.Produtos.FindAsync(id);
             if (tipoProduto == null) return NotFound();
 
             return View(tipoProduto);
@@ -73,14 +73,14 @@ namespace MoveisCarrara.Controllers
         // POST /TipoProdutos/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, TipoProduto tipoProduto)
+        public async Task<IActionResult> Edit(int id, Produto tipoProduto)
         {
             if (!VerificarLogin()) return RedirectToAction("Login", "Home");
 
             if (ModelState.IsValid)
             {
                 tipoProduto.Codigo = id;
-                _context.TipoProdutos.Update(tipoProduto);
+                _context.Produtos.Update(tipoProduto);
                 await _context.SaveChangesAsync();
                 TempData["Sucesso"] = "Tipo de produto alterado com sucesso!";
                 return RedirectToAction("Index");
@@ -96,10 +96,10 @@ namespace MoveisCarrara.Controllers
         {
             if (!VerificarLogin()) return RedirectToAction("Login", "Home");
 
-            var tipoProduto = await _context.TipoProdutos.FindAsync(id);
+            var tipoProduto = await _context.Produtos.FindAsync(id);
             if (tipoProduto != null)
             {
-                _context.TipoProdutos.Remove(tipoProduto);
+                _context.Produtos.Remove(tipoProduto);
                 await _context.SaveChangesAsync();
                 TempData["Sucesso"] = "Tipo de produto excluído com sucesso!";
             }

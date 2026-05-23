@@ -3,7 +3,7 @@
 @{
     ViewData["Title"]         = "Alterar Venda";
     ViewData["SidebarTitulo"] = "Vendas";
-    var produtos  = (List<TipoProduto>)ViewBag.Produtos;
+    var produtos  = (List<Produto>)ViewBag.Produtos;
     var clientes  = (List<Cliente>)ViewBag.Clientes;
     var funcs     = (List<Funcionario>)ViewBag.Funcionarios;
     var itens     = ViewBag.Itens as List<VendaTipoProduto> ?? new List<VendaTipoProduto>();
@@ -108,7 +108,7 @@
                                             <option value="0">Selecione...</option>
                                             @foreach (var p in produtos)
                                             {
-                                                if (p.Codigo == item.TipoProdutoCodigo)
+                                                if (p.Codigo == item.ProdutoCodigo)
                                                 {
                                                     <option value="@p.Codigo" data-preco="@p.ValorUnitario.ToString("F2", System.Globalization.CultureInfo.InvariantCulture)" selected="selected">@p.NomeProduto</option>
                                                 }

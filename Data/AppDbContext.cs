@@ -18,11 +18,13 @@ namespace MoveisCarrara.Data
         public DbSet<Funcionario>      Funcionarios      { get; set; }
         public DbSet<Situacao>         Situacoes         { get; set; }
         public DbSet<Lancamento>       Lancamentos       { get; set; }
-        public DbSet<TipoProduto>      TipoProdutos      { get; set; }
+        public DbSet<Produto>          Produtos          { get; set; }
         public DbSet<Material>         Materiais         { get; set; }
         public DbSet<Venda>            Vendas            { get; set; }
         public DbSet<Compra>           Compras           { get; set; }
         public DbSet<VendaTipoProduto> VendaTipoProdutos { get; set; }
+        public DbSet<VendaProduto>     VendaProdutos    { get; set; }
+        public DbSet<CompraMaterial>   CompraMateriais  { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -57,7 +59,7 @@ namespace MoveisCarrara.Data
                 entity.Property(s => s.Descricao).HasColumnName("descricao");
             });
 
-            modelBuilder.Entity<TipoProduto>(entity =>
+            modelBuilder.Entity<Produto>(entity =>
             {
                 entity.Property(t => t.Codigo).HasColumnName("codigo");
                 entity.Property(t => t.NomeProduto).HasColumnName("nome_produto");
@@ -69,15 +71,29 @@ namespace MoveisCarrara.Data
             {
                 entity.Property(m => m.Codigo).HasColumnName("codigo");
                 entity.Property(m => m.NomeMaterial).HasColumnName("nome_material");
-                entity.Property(m => m.Descricao).HasColumnName("descricao");
-                entity.Property(m => m.Preco).HasColumnName("preco");
             });
 
             // Chave primária composta: (venda_codigo, item)
-            modelBuilder.Entity<VendaTipoProduto>(entity =>
+            modelBuilder.Entity<VendaProduto>(entity =>
             {
                 entity.HasKey(v => new { v.VendaCodigo, v.Item });
-                entity.ToTable("vendas_tipo_produtos");
+                entity.ToTable("vendas_produtos");
+            });
+
+            modelBuilder.Entity<VendaProduto>(entity =>
+{
+                entity.ToTable("vendas_produtos");
+                entity.HasKey(v => new { v.VendaCodigo, v.Item });
+                entity.Property(v => v.VendaCodigo).HasColumnName("venda_codigo");
+                entity.Property(v => v.ProdutoCodigo).HasColumnName("produto_codigo");
+            });
+
+            modelBuilder.Entity<CompraMaterial>(entity =>
+            {
+                entity.ToTable("compras_materiais");
+                entity.HasKey(c => new { c.CompraCodigo, c.Item });
+                entity.Property(c => c.CompraCodigo).HasColumnName("compra_codigo");
+                entity.Property(c => c.MaterialCodigo).HasColumnName("material_codigo");
             });
         }
     }

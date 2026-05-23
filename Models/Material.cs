@@ -18,12 +18,5 @@ namespace MoveisCarrara.Models
         [StringLength(100)]
         [Column("nome_material")]
         public string NomeMaterial { get; set; } = "";
-
-        [StringLength(200)]
-        public string? Descricao { get; set; }
-
-        [Required(ErrorMessage = "Preço é obrigatório")]
-        [Column(TypeName = "decimal(10,2)")]
-        public decimal Preco { get; set; }
     }
 }
