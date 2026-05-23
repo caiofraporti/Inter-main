@@ -21,6 +21,9 @@ namespace MoveisCarrara.Models
         [StringLength(20)]
         public string? Dimensoes { get; set; }
 
+        [StringLength(200)]
+        public string? Descricao { get; set; }
+
         // Navegação
         [ForeignKey("VendaCodigo")]
         public Venda? Venda { get; set; }

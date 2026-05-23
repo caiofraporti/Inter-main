@@ -11,7 +11,7 @@
     <a asp-action="Index"  class="nav-link"><i class="bi bi-list-ul me-2"></i>Listar</a>
 }
 
-<div class="card shadow-sm" style="max-width:900px">
+<div class="card shadow-sm" style="max-width:1000px">
     <div class="card-body p-4">
         <h2 class="fw-normal mb-4">Cadastrar Venda</h2>
 
@@ -74,12 +74,13 @@
                 <table class="table table-bordered align-middle" id="tabelaItens">
                     <thead class="table-light">
                         <tr>
-                            <th style="width:35%">Produto</th>
-                            <th style="width:10%">Qtd</th>
-                            <th style="width:15%">Preço Unit. (R$)</th>
-                            <th style="width:15%">Dimensões</th>
-                            <th style="width:15%">Subtotal</th>
-                            <th style="width:10%"></th>
+                            <th style="min-width:180px">Produto</th>
+                            <th style="width:70px">Qtd</th>
+                            <th style="width:120px">Preço Unit. (R$)</th>
+                            <th style="width:110px">Dimensões</th>
+                            <th style="min-width:160px">Descrição</th>
+                            <th style="width:110px">Subtotal</th>
+                            <th style="width:50px"></th>
                         </tr>
                     </thead>
                     <tbody id="itensBody">
@@ -98,6 +99,7 @@
                             <td><input type="number" name="itemQtd" class="form-control form-control-sm item-qtd" value="1" min="1"></td>
                             <td><input type="number" name="itemPreco" class="form-control form-control-sm item-preco" step="0.01" value="0"></td>
                             <td><input type="text" name="itemDimensoes" class="form-control form-control-sm" placeholder="ex: 100x60"></td>
+                            <td><input type="text" name="itemDescricao" class="form-control form-control-sm" placeholder="Descrição do item"></td>
                             <td><span class="item-subtotal text-muted">R$ 0,00</span></td>
                             <td><button type="button" class="btn btn-sm btn-outline-danger btn-remover-item"><i class="bi bi-trash"></i></button></td>
                         </tr>
@@ -121,7 +123,6 @@
 
 @section Scripts {
 <script>
-// Produtos disponíveis para clonar
 var produtosOptions = `@foreach (var p in produtos) {
     <text><option value="@p.Codigo" data-preco="@p.ValorUnitario.ToString("F2", System.Globalization.CultureInfo.InvariantCulture)">@p.NomeProduto</option></text>
 }`;
@@ -160,10 +161,8 @@ function bindLinha(row) {
     });
 }
 
-// Bind na linha inicial
 document.querySelectorAll('.item-row').forEach(bindLinha);
 
-// Adicionar nova linha
 document.getElementById('btnAddItem').addEventListener('click', function() {
     var tbody = document.getElementById('itensBody');
     var newRow = document.createElement('tr');
@@ -178,6 +177,7 @@ document.getElementById('btnAddItem').addEventListener('click', function() {
         <td><input type="number" name="itemQtd" class="form-control form-control-sm item-qtd" value="1" min="1"></td>
         <td><input type="number" name="itemPreco" class="form-control form-control-sm item-preco" step="0.01" value="0"></td>
         <td><input type="text" name="itemDimensoes" class="form-control form-control-sm" placeholder="ex: 100x60"></td>
+        <td><input type="text" name="itemDescricao" class="form-control form-control-sm" placeholder="Descrição do item"></td>
         <td><span class="item-subtotal text-muted">R$ 0,00</span></td>
         <td><button type="button" class="btn btn-sm btn-outline-danger btn-remover-item"><i class="bi bi-trash"></i></button></td>
     `;

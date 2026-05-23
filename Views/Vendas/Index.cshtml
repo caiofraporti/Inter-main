@@ -12,9 +12,9 @@
 
 @section HeaderNav {
     <div class="d-flex gap-4">
-        <a asp-controller="Produtos" asp-action="Index" class="text-decoration-none" style="color:#8b6f47">Produtos</a>
-        <a asp-controller="Compras"      asp-action="Index" class="text-decoration-none" style="color:#8b6f47">Compras</a>
-        <a asp-controller="Clientes"     asp-action="Index" class="text-decoration-none" style="color:#8b6f47">Clientes</a>
+        <a asp-controller="Produtos"  asp-action="Index" class="text-decoration-none" style="color:#8b6f47">Produtos</a>
+        <a asp-controller="Compras"   asp-action="Index" class="text-decoration-none" style="color:#8b6f47">Compras</a>
+        <a asp-controller="Clientes"  asp-action="Index" class="text-decoration-none" style="color:#8b6f47">Clientes</a>
     </div>
 }
 
@@ -50,6 +50,10 @@
                         <td>@(v.Total.HasValue ? "R$ " + v.Total.Value.ToString("N2") : "—")</td>
                         <td>
                             <div class="d-flex gap-2">
+                                <a asp-action="Details" asp-route-id="@v.Codigo"
+                                   class="btn btn-sm btn-outline-secondary">
+                                    <i class="bi bi-eye"></i>
+                                </a>
                                 <a asp-action="Edit" asp-route-id="@v.Codigo"
                                    class="btn btn-sm" style="background:#7fd4c1">Alterar</a>
                                 <form asp-action="Delete" asp-route-id="@v.Codigo"

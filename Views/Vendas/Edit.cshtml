@@ -3,10 +3,10 @@
 @{
     ViewData["Title"]         = "Alterar Venda";
     ViewData["SidebarTitulo"] = "Vendas";
-    var produtos  = (List<Produto>)ViewBag.Produtos;
-    var clientes  = (List<Cliente>)ViewBag.Clientes;
-    var funcs     = (List<Funcionario>)ViewBag.Funcionarios;
-    var itens     = ViewBag.Itens as List<VendaProduto> ?? new List<VendaProduto>();
+    var produtos = (List<Produto>)ViewBag.Produtos;
+    var clientes = (List<Cliente>)ViewBag.Clientes;
+    var funcs    = (List<Funcionario>)ViewBag.Funcionarios;
+    var itens    = ViewBag.Itens as List<VendaProduto> ?? new List<VendaProduto>();
 }
 
 @section SidebarMenu {
@@ -15,7 +15,7 @@
     <a class="nav-link active"><i class="bi bi-pencil me-2"></i>Alterar</a>
 }
 
-<div class="card shadow-sm" style="max-width:900px">
+<div class="card shadow-sm" style="max-width:1000px">
     <div class="card-body p-4">
         <h2 class="fw-normal mb-4">Alterar Venda</h2>
 
@@ -89,12 +89,13 @@
                 <table class="table table-bordered align-middle" id="tabelaItens">
                     <thead class="table-light">
                         <tr>
-                            <th style="width:35%">Produto</th>
-                            <th style="width:10%">Qtd</th>
-                            <th style="width:15%">Preço Unit. (R$)</th>
-                            <th style="width:15%">Dimensões</th>
-                            <th style="width:15%">Subtotal</th>
-                            <th style="width:10%"></th>
+                            <th style="min-width:180px">Produto</th>
+                            <th style="width:70px">Qtd</th>
+                            <th style="width:120px">Preço Unit. (R$)</th>
+                            <th style="width:110px">Dimensões</th>
+                            <th style="min-width:160px">Descrição</th>
+                            <th style="width:110px">Subtotal</th>
+                            <th style="width:50px"></th>
                         </tr>
                     </thead>
                     <tbody id="itensBody">
@@ -110,11 +111,14 @@
                                             {
                                                 if (p.Codigo == item.ProdutoCodigo)
                                                 {
-                                                    <option value="@p.Codigo" data-preco="@p.ValorUnitario.ToString("F2", System.Globalization.CultureInfo.InvariantCulture)" selected="selected">@p.NomeProduto</option>
+                                                    <option value="@p.Codigo"
+                                                            data-preco="@p.ValorUnitario.ToString("F2", System.Globalization.CultureInfo.InvariantCulture)"
+                                                            selected="selected">@p.NomeProduto</option>
                                                 }
                                                 else
                                                 {
-                                                    <option value="@p.Codigo" data-preco="@p.ValorUnitario.ToString("F2", System.Globalization.CultureInfo.InvariantCulture)">@p.NomeProduto</option>
+                                                    <option value="@p.Codigo"
+                                                            data-preco="@p.ValorUnitario.ToString("F2", System.Globalization.CultureInfo.InvariantCulture)">@p.NomeProduto</option>
                                                 }
                                             }
                                         </select>
@@ -122,6 +126,7 @@
                                     <td><input type="number" name="itemQtd" class="form-control form-control-sm item-qtd" value="@item.Qtd" min="1"></td>
                                     <td><input type="number" name="itemPreco" class="form-control form-control-sm item-preco" step="0.01" value="@item.Preco.ToString("F2", System.Globalization.CultureInfo.InvariantCulture)"></td>
                                     <td><input type="text" name="itemDimensoes" class="form-control form-control-sm" value="@item.Dimensoes" placeholder="ex: 100x60"></td>
+                                    <td><input type="text" name="itemDescricao" class="form-control form-control-sm" value="@item.Descricao" placeholder="Descrição do item"></td>
                                     <td><span class="item-subtotal text-muted">R$ @((item.Qtd * item.Preco).ToString("N2"))</span></td>
                                     <td><button type="button" class="btn btn-sm btn-outline-danger btn-remover-item"><i class="bi bi-trash"></i></button></td>
                                 </tr>
@@ -142,6 +147,7 @@
                                 <td><input type="number" name="itemQtd" class="form-control form-control-sm item-qtd" value="1" min="1"></td>
                                 <td><input type="number" name="itemPreco" class="form-control form-control-sm item-preco" step="0.01" value="0"></td>
                                 <td><input type="text" name="itemDimensoes" class="form-control form-control-sm" placeholder="ex: 100x60"></td>
+                                <td><input type="text" name="itemDescricao" class="form-control form-control-sm" placeholder="Descrição do item"></td>
                                 <td><span class="item-subtotal text-muted">R$ 0,00</span></td>
                                 <td><button type="button" class="btn btn-sm btn-outline-danger btn-remover-item"><i class="bi bi-trash"></i></button></td>
                             </tr>
@@ -218,6 +224,7 @@ document.getElementById('btnAddItem').addEventListener('click', function() {
         <td><input type="number" name="itemQtd" class="form-control form-control-sm item-qtd" value="1" min="1"></td>
         <td><input type="number" name="itemPreco" class="form-control form-control-sm item-preco" step="0.01" value="0"></td>
         <td><input type="text" name="itemDimensoes" class="form-control form-control-sm" placeholder="ex: 100x60"></td>
+        <td><input type="text" name="itemDescricao" class="form-control form-control-sm" placeholder="Descrição do item"></td>
         <td><span class="item-subtotal text-muted">R$ 0,00</span></td>
         <td><button type="button" class="btn btn-sm btn-outline-danger btn-remover-item"><i class="bi bi-trash"></i></button></td>
     `;
